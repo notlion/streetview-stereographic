@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<style type="text/css">
+    html { height: 100% }
+    body { height: 100%; margin: 0; padding: 0 }
+    #map { width: 100%; height: 100% }
+    #pano_preview {
+        position: absolute;
+        top: 0px; left: 0px;
+    }
+</style>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
+<script type="text/javascript">
+
+var map;
+var sv = new google.maps.StreetViewService();
+
+function init(){
+    console.log(google.maps);
+    var mapOptions = {
+        center: new google.maps.LatLng(35.68105404078226, -220.23288249969482),
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        streetViewControl: false
+    };
+    map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+    google.maps.event.addListener(map, "click", function(event){
+        sv.getPanoramaByLocation(event.latLng, 50, onPanoData);
+    });
+}
+
+function onPanoData(data, status){
+    if(status == google.maps.StreetViewStatus.OK){
+        console.log(data);
+        document.getElementById("pano_preview").src = svGetTileUrl(data.location.pano, 0, 0, 0);
+    }
+}
+
+function svGetTileUrl(pano, zoom, x, y){
+    return "http://cbk" + Math.floor(Math.random() * 4) + ".google.com/cbk?output=tile" +
+           "&panoid=" + pano + "&zoom=" + zoom + "&x=" + x + "&y=" + y;
+}
+
+window.addEventListener("load", init, false);
+
+</script>
+</head>
+<body onload="init()">
+    <div id="map"></div>
+    <img id="pano_preview">
+</body>
+</html>
