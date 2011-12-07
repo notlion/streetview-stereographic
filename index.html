@@ -11,39 +11,44 @@
         top: 0px; left: 0px;
     }
 </style>
+<script type="text/javascript" src="lib/embr/src/lib/require.js"></script>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
 <script type="text/javascript">
 
-var map;
-var sv = new google.maps.StreetViewService();
+var map, pano_marker;
 
 function init(){
-    console.log(google.maps);
-    var mapOptions = {
-        center: new google.maps.LatLng(35.68105404078226, -220.23288249969482),
-        zoom: 15,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        streetViewControl: false
-    };
-    map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    require({
+        paths: {
+            "embr": "lib/embr/src/"
+        }
+    },
+    [
+        "sv"
+    ], function(sv){
+        var mapOptions = {
+            center: new google.maps.LatLng(35.68105404078226, -220.23288249969482),
+            zoom: 15,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            streetViewControl: false
+        };
+        var sv_service = new google.maps.StreetViewService();
+        map = new google.maps.Map(document.getElementById("map"), mapOptions);
+        pano_marker = new google.maps.Marker({ map: map });
 
-    google.maps.event.addListener(map, "click", function(event){
-        sv.getPanoramaByLocation(event.latLng, 50, onPanoData);
+        google.maps.event.addListener(map, "click", function(event){
+            sv_service.getPanoramaByLocation(event.latLng, 50, onPanoData);
+        });
+
+        function onPanoData(data, status){
+            if(status == google.maps.StreetViewStatus.OK){
+                pano_marker.setPosition(data.location.latLng);
+                console.log(sv.getPanoDimensions(data, 1));
+                document.getElementById("pano_preview").src = sv.getTileUrl(data.location.pano, 0, 0, 0);
+            }
+        }
     });
 }
-
-function onPanoData(data, status){
-    if(status == google.maps.StreetViewStatus.OK){
-        console.log(data);
-        document.getElementById("pano_preview").src = svGetTileUrl(data.location.pano, 0, 0, 0);
-    }
-}
-
-function svGetTileUrl(pano, zoom, x, y){
-    return "http://cbk" + Math.floor(Math.random() * 4) + ".google.com/cbk?output=tile" +
-           "&panoid=" + pano + "&zoom=" + zoom + "&x=" + x + "&y=" + y;
-}
-
 window.addEventListener("load", init, false);
 
 </script>

@@ -1,0 +1,3 @@
+[submodule "lib/embr"]
+	path = lib/embr
+	url = git@github.com:notlion/embr.git
