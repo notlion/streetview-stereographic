@@ -30,7 +30,7 @@ app.get("/pano/:id/:zoom/:x/:y", function(req, res){
     http.get(opts, function(goog_res){
         res.writeHead(200, {
             "content-type": "image/jpeg",
-            "access-control-allow-origin", "*"
+            "access-control-allow-origin": "*"
         });
         goog_res.on("data", function(chunk){
             res.write(chunk, "binary"); // .. and Write to Client
