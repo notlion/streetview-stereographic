@@ -44,4 +44,4 @@ app.get("/pano/:id/:zoom/:x/:y", function(req, res){
 
 });
 
-app.listen(1337);
+app.listen(80);
