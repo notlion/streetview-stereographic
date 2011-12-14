@@ -3,19 +3,42 @@
 <head>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 <style type="text/css">
-    html { height: 100% }
-    body { height: 100%; margin: 0; padding: 0 }
-    #map { width: 100%; height: 100% }
-    #pano_preview {
-        position: absolute;
-        top: 0px; left: 0px;
-    }
+
+html { height: 100% }
+body { height: 100%; margin: 0; padding: 0 }
+#pano {
+    float: left;
+    width: 50%;
+    height: 100%;
+}
+#code {
+    position: absolute;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: transparent;
+    font-family: Monospace;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: pre-wrap;
+    text-shadow: black 0px 1px 3px;
+    outline: none;
+    resize: none;
+}
+#code:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    box-shadow: inset rgba(0, 0, 0, 0.25) 0px 0px 5px;
+}
+#map {
+    float: left;
+    width: 50%;
+    height: 100%;
+}
+
 </style>
 <script type="text/javascript" src="lib/embr/src/lib/require.js"></script>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
 <script type="text/javascript">
-
-var map, pano_marker;
 
 function init(){
     require({
@@ -24,37 +47,96 @@ function init(){
         }
     },
     [
+        "embr/core",
+        "embr/material",
+        "util",
         "sv"
-    ], function(sv){
-        var mapOptions = {
+    ], function(core, material, util, sv){
+
+        var map = new google.maps.Map(document.getElementById("map"), {
             center: new google.maps.LatLng(35.68105404078226, -220.23288249969482),
             zoom: 15,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             streetViewControl: false
-        };
+        });
+        var pano_marker = new google.maps.Marker({ map: map });
         var sv_service = new google.maps.StreetViewService();
-        map = new google.maps.Map(document.getElementById("map"), mapOptions);
-        pano_marker = new google.maps.Marker({ map: map });
 
         google.maps.event.addListener(map, "click", function(event){
             sv_service.getPanoramaByLocation(event.latLng, 50, onPanoData);
         });
 
+        var canvas = document.getElementById("gl_canvas");
+        var gl = util.getGLContext(canvas);
+
+        var material = new material.ColorMaterial(gl, {
+            use_texture: true
+        });
+        var plane = core.Vbo.createPlane(gl, -1, -1, 1, 1);
+        var projection = new core.Mat4().ortho(-1, 1, 1, -1, -1, 1);
+        var texture = new core.Texture(gl);
+
         function onPanoData(data, status){
             if(status == google.maps.StreetViewStatus.OK){
                 pano_marker.setPosition(data.location.latLng);
-                console.log(sv.getPanoDimensions(data, 1));
-                document.getElementById("pano_preview").src = sv.getTileUrl(data.location.pano, 0, 0, 0);
+                console.log(sv.getPanoDimensions(data, 0));
+                util.loadImage(sv.getTileUrl(data.location.pano, 0, 0, 0), function(img){
+                    texture.setDataWithElement(img);
+                    refresh();
+                });
             }
         }
+
+        var anim_handle = null;
+        function refresh(){
+            if(anim_handle)
+                util.cancelAnimationFrame(anim_handle);
+            anim_handle = util.requestAnimationFrame(onDraw, canvas);
+        }
+
+        function onDraw(){
+            texture.bind();
+            material.use({
+                projection: projection,
+                texture: 0
+            });
+            plane.draw(material);
+        }
+
+        function onResize(){
+            var code = document.getElementById("code");
+            var pano = document.getElementById("pano");
+            var padding = 10, margin = 32;
+            code.style.left = margin + "px";
+            code.style.top = margin + "px";
+            code.style.padding = padding + "px";
+            code.style.width = (pano.offsetWidth - (padding + margin) * 2) + "px";
+            code.style.height = (pano.offsetHeight - (padding + margin) * 2) + "px";
+        }
+
+        window.addEventListener("resize", onResize, false);
+        onResize();
+
     });
 }
+
 window.addEventListener("load", init, false);
 
 </script>
 </head>
-<body onload="init()">
+<body>
+    <div id="pano">
+        <canvas id="gl_canvas"></canvas>
+        <textarea id="code">
+sampler2D u_texture;
+
+varying v_texcoord;
+
+void main(){
+    gl_FragColor = texture2D(u_texture, v_texcoord);
+}
+        </textarea>
+    </div>
     <div id="map"></div>
-    <img id="pano_preview">
 </body>
 </html>
