@@ -58,9 +58,11 @@ define([
         var pano_zoom = -1;
         var pano_dims;
 
-        var framebuffer = this.framebuffer = new core.Fbo(gl, 3328, 1664, [{
+        var framebuffer = this.framebuffer = new core.Fbo(gl, 2048, 2048, [{
             filter_min: gl.LINEAR,
-            filter_mag: gl.LINEAR
+            filter_mag: gl.LINEAR,
+            wrap_s: gl.REPEAT,
+            wrap_t: gl.MIRRORED_REPEAT
         }]);
         var plane = core.Vbo.createPlane(gl, 0, 0, 1, 1);
         var material = new mat.ColorMaterial(gl, { flags: { use_texture: true } });
@@ -149,11 +151,11 @@ define([
                 pano_zoom = zoom;
                 pano_dims = getPanoDimensions(pano_data, pano_zoom);
 
-                console.log("Zoom:", pano_zoom);
+                console.log("Zoom:", pano_zoom, pano_dims);
 
                 var w = pano_dims.size.x / pano_data.tiles.tileSize.width;
                 var h = pano_dims.size.y / pano_data.tiles.tileSize.height;
-                projection.reset().ortho(0, w, h, 0, -1, 1);
+                projection.reset().ortho(0, w, 0, h, -1, 1);
 
                 this.clearTiles();
             }

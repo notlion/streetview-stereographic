@@ -40,6 +40,11 @@ body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
     width: auto;
     height: 100%;
 }
+#map, #glcanvas {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
 
 </style>
 <script type="text/javascript" src="lib/embr/src/lib/require.js"></script>
@@ -95,7 +100,6 @@ function init(){
                 pano_shader.compile(pano_shader_src_vert, code.value);
                 pano_shader.link();
                 code.className = "";
-                refresh();
                 console.log("Compile Successful!");
             }
             catch(err){
@@ -131,7 +135,8 @@ function init(){
         // Setup GL
 
         var canvas = document.getElementById("glcanvas");
-        var gl = core.Util.glWrapContextWithErrorChecks(util.getGLContext(canvas));
+        // var gl = core.Util.glWrapContextWithErrorChecks(util.getGLContext(canvas));
+        var gl = util.getGLContext(canvas);
 
         var pano_shader = new core.Program(gl);
         var plane = core.Vbo.createPlane(gl, 0, 0, 1, 1);
@@ -165,13 +170,14 @@ function init(){
             gl.viewport(0, 0, canvas.width, canvas.height);
 
             loader.framebuffer.bindTexture(0);
+            var time = (Date.now() - start_time) / 1000;
             pano_shader.use({
                 projection: projection,
-                size: new core.Vec2(canvas.width, canvas.height),
-                zoom: 1.5,
+                aspect: canvas.height / canvas.width,
+                zoom: 0.25 + Math.sin(time) * 0.1,
                 lat: Math.PI / 2,
                 lon: 0,
-                time: (Date.now() - start_time) / 1000,
+                time: time,
                 texture: 0
             });
             plane.draw(pano_shader);
@@ -196,6 +202,7 @@ function init(){
 
         window.addEventListener("resize", onResize, false);
         onResize();
+        refresh();
 
         sv_service.getPanoramaByLocation(map.getCenter(), 1000, onPanoData);
 
@@ -234,8 +241,7 @@ if(!window.cancelAnimationFrame){
         <canvas id="glcanvas"></canvas>
 <textarea id="code">
 uniform sampler2D texture;
-uniform vec2 size;
-uniform float zoom, lat, lon, time;
+uniform float zoom, lat, lon, aspect, time;
 
 varying vec2 v_texcoord;
 
@@ -243,12 +249,10 @@ varying vec2 v_texcoord;
 #define PI_2 1.570796326794897
 
 void main(){
-    float aspect = size.y / size.x;
-    vec2 rads = vec2(PI / .5, PI_2 / .5);
+    vec2 rads = vec2(PI * 2., PI);
     vec2 pnt = (v_texcoord - .5) * vec2(1., aspect);
-    float r = 0.1;
     float p = length(pnt);
-    float c = 2. * atan(p / (2. * r * zoom + sin(time) * 0.1));
+    float c = 2. * atan(p / zoom);
     float cc = cos(c);
     float sc = sin(c);
     float cl = cos(lat);
