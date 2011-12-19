@@ -1,9 +1,6 @@
-define([
+define(function(){
 
-    "embr/core",
-    "sv"
-
-], function(core, sv){
+    "use strict";
 
     return {
 
@@ -29,32 +26,18 @@ define([
 
         loadImage: function(src, callback){
             var img = new Image();
-            img.onload = function(){
-                if(callback)
-                    callback(img);
-            };
+            img.crossOrigin = "anonymous"; // Appease the x-domain gods
+            if(callback){
+                img.onload = function(){
+                    callback(null, img);
+                };
+                img.onerror = function(){
+                    callback(err, img);
+                };
+            }
             img.src = src;
-        },
-
-        requestAnimationFrame: (function(){
-            return window.requestAnimationFrame       ||
-                   window.webkitRequestAnimationFrame ||
-                   window.mozRequestAnimationFrame    ||
-                   window.oRequestAnimationFrame      ||
-                   window.msRequestAnimationFrame     ||
-                   function(callback, element){
-                       window.setTimeout(callback, 1000 / 60);
-                   };
-        })(),
-
-        cancelAnimationFrame: (function(){
-            return window.cancelRequestAnimationFrame       ||
-                   window.webkitCancelRequestAnimationFrame ||
-                   window.mozCancelRequestAnimationFrame    ||
-                   window.oCancelRequestAnimationFrame      ||
-                   window.msCancelRequestAnimationFrame     ||
-                   clearTimeout
-        })()
+            return img;
+        }
 
     };
 

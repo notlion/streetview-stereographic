@@ -5,7 +5,7 @@
 <style type="text/css">
 
 html { height: 100% }
-body { height: 100%; margin: 0; padding: 0 }
+body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
 #pano {
     float: left;
     width: 50%;
@@ -25,13 +25,19 @@ body { height: 100%; margin: 0; padding: 0 }
     outline: none;
     resize: none;
 }
+#code.error {
+    color: #f00;
+}
 #code:hover {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(32, 32, 32, 0.8);
     box-shadow: inset rgba(0, 0, 0, 0.25) 0px 0px 5px;
 }
+#glcanvas {
+    width: 100%;
+    height: 100%;
+}
 #map {
-    float: left;
-    width: 50%;
+    width: auto;
     height: 100%;
 }
 
@@ -39,6 +45,8 @@ body { height: 100%; margin: 0; padding: 0 }
 <script type="text/javascript" src="lib/embr/src/lib/require.js"></script>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
 <script type="text/javascript">
+
+"use strict";
 
 function init(){
     require({
@@ -53,6 +61,8 @@ function init(){
         "sv"
     ], function(core, material, util, sv){
 
+        // Setup GoogMaps
+
         var map = new google.maps.Map(document.getElementById("map"), {
             center: new google.maps.LatLng(35.68105404078226, -220.23288249969482),
             zoom: 15,
@@ -66,45 +76,109 @@ function init(){
             sv_service.getPanoramaByLocation(event.latLng, 50, onPanoData);
         });
 
-        var canvas = document.getElementById("gl_canvas");
-        var gl = util.getGLContext(canvas);
 
-        var material = new material.ColorMaterial(gl, {
-            use_texture: true
-        });
-        var plane = core.Vbo.createPlane(gl, -1, -1, 1, 1);
-        var projection = new core.Mat4().ortho(-1, 1, 1, -1, -1, 1);
-        var texture = new core.Texture(gl);
+        // Setup Dynamic Code Compilation
+
+        var pano_shader_src_vert = [
+            "uniform mat4 projection;",
+            "attribute vec3 position;",
+            "attribute vec2 texcoord;",
+            "varying vec2 v_texcoord;",
+            "void main(){",
+                "v_texcoord = texcoord;",
+                "gl_Position = projection * vec4(position, 1.);",
+            "}"
+        ].join("\n");
+
+        function tryShaderCompile(){
+            try{
+                pano_shader.compile(pano_shader_src_vert, code.value);
+                pano_shader.link();
+                code.className = "";
+                refresh();
+                console.log("Compile Successful!");
+            }
+            catch(err){
+                code.className = "error";
+                console.error("Error compiling shader: " + err);
+            }
+        }
+
+        var code = document.getElementById("code");
+        code.addEventListener("keydown", function(e){
+            if(event.keyCode == 9){ // tab
+                e.preventDefault();
+
+                var start = code.selectionStart;
+                var end = code.selectionEnd;
+
+                code.value = code.value.substring(0, start) + "    " + code.value.substring(end, code.value.length);
+                code.selectionStart = code.selectionEnd = start + 4;
+                code.focus();
+            }
+        }, false);
+        code.addEventListener("keyup", function(e){
+            if(event.keyCode == 37 || // left
+               event.keyCode == 38 || // up
+               event.keyCode == 39 || // right
+               event.keyCode == 40)   // down
+                return;
+
+            tryShaderCompile();
+        }, false);
+
+
+        // Setup GL
+
+        var canvas = document.getElementById("glcanvas");
+        var gl = core.Util.glWrapContextWithErrorChecks(util.getGLContext(canvas));
+
+        var pano_shader = new core.Program(gl);
+        var plane = core.Vbo.createPlane(gl, 0, 0, 1, 1);
+
+        var modelview = new core.Mat4();
+        var projection = new core.Mat4().ortho(0, 1, 1, 0, -1, 1);
+
+        var loader = new sv.TileLoader(gl);
+
+        tryShaderCompile();
+
 
         function onPanoData(data, status){
             if(status == google.maps.StreetViewStatus.OK){
                 pano_marker.setPosition(data.location.latLng);
-                console.log(sv.getPanoDimensions(data, 0));
-                util.loadImage(sv.getTileUrl(data.location.pano, 0, 0, 0), function(img){
-                    texture.setDataWithElement(img);
-                    refresh();
-                });
+                loader.setPano(data);
             }
         }
 
-        var anim_handle = null;
         function refresh(){
             if(anim_handle)
                 util.cancelAnimationFrame(anim_handle);
-            anim_handle = util.requestAnimationFrame(onDraw, canvas);
+            anim_handle = window.requestAnimationFrame(onDraw);
         }
+        var anim_handle = null;
 
         function onDraw(){
-            texture.bind();
-            material.use({
+            anim_handle = null;
+            refresh();
+
+            gl.viewport(0, 0, canvas.width, canvas.height);
+
+            loader.framebuffer.bindTexture(0);
+            pano_shader.use({
                 projection: projection,
+                size: new core.Vec2(canvas.width, canvas.height),
+                zoom: 1.5,
+                lat: Math.PI / 2,
+                lon: 0,
+                time: (Date.now() - start_time) / 1000,
                 texture: 0
             });
-            plane.draw(material);
+            plane.draw(pano_shader);
         }
+        var start_time = Date.now();
 
         function onResize(){
-            var code = document.getElementById("code");
             var pano = document.getElementById("pano");
             var padding = 10, margin = 32;
             code.style.left = margin + "px";
@@ -112,30 +186,78 @@ function init(){
             code.style.padding = padding + "px";
             code.style.width = (pano.offsetWidth - (padding + margin) * 2) + "px";
             code.style.height = (pano.offsetHeight - (padding + margin) * 2) + "px";
+
+            // Size Canvas
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+
+            // refresh();
         }
 
         window.addEventListener("resize", onResize, false);
         onResize();
+
+        sv_service.getPanoramaByLocation(map.getCenter(), 1000, onPanoData);
 
     });
 }
 
 window.addEventListener("load", init, false);
 
+if(!window.requestAnimationFrame){
+    window.requestAnimationFrame = (function(){
+        return window.webkitCRequestAnimationFrame ||
+               window.mozRequestAnimationFrame ||
+               window.oRequestAnimationFrame ||
+               window.msRequestAnimationFrame ||
+               function(callback, element){
+                   window.setTimeout(callback, 1000 / 60);
+               };
+    })();
+}
+
+if(!window.cancelAnimationFrame){
+    window.cancelAnimationFrame = (function(){
+        return window.cancelRequestAnimationFrame       ||
+               window.webkitCancelRequestAnimationFrame ||
+               window.mozCancelRequestAnimationFrame    ||
+               window.oCancelRequestAnimationFrame      ||
+               window.msCancelRequestAnimationFrame     ||
+               clearTimeout;
+    })();
+}
+
 </script>
 </head>
 <body>
     <div id="pano">
-        <canvas id="gl_canvas"></canvas>
-        <textarea id="code">
-sampler2D u_texture;
+        <canvas id="glcanvas"></canvas>
+<textarea id="code">
+uniform sampler2D texture;
+uniform vec2 size;
+uniform float zoom, lat, lon, time;
 
-varying v_texcoord;
+varying vec2 v_texcoord;
+
+#define PI   3.141592653589793
+#define PI_2 1.570796326794897
 
 void main(){
-    gl_FragColor = texture2D(u_texture, v_texcoord);
+    float aspect = size.y / size.x;
+    vec2 rads = vec2(PI / .5, PI_2 / .5);
+    vec2 pnt = (v_texcoord - .5) * vec2(1., aspect);
+    float r = 0.1;
+    float p = length(pnt);
+    float c = 2. * atan(p / (2. * r * zoom + sin(time) * 0.1));
+    float cc = cos(c);
+    float sc = sin(c);
+    float cl = cos(lat);
+    float sl = sin(lat);
+    float lat_out = asin(cc * sl + (pnt.y * sc * cl) / p);
+    float lon_out = lon + atan(pnt.x * sc, (p * cl * cc - pnt.y * sl * sc));
+    gl_FragColor = texture2D(texture, vec2(lon_out, lat_out) / rads + .5);
 }
-        </textarea>
+</textarea>
     </div>
     <div id="map"></div>
 </body>
