@@ -2,6 +2,8 @@ define(function(){
 
     "use strict";
 
+    var PI_180 = Math.PI / 180;
+
     return {
 
         getGLContext: function(canvas){
@@ -37,6 +39,10 @@ define(function(){
             }
             img.src = src;
             return img;
+        },
+
+        degreeToRadian: function(deg){
+            return deg * PI_180;
         }
 
     };

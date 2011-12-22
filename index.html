@@ -153,8 +153,10 @@ function init(){
             if(status == google.maps.StreetViewStatus.OK){
                 pano_marker.setPosition(data.location.latLng);
                 loader.setPano(data);
+                pano_heading = util.degreeToRadian(data.tiles.centerHeading);
             }
         }
+        var pano_heading = 0;
 
         function refresh(){
             if(anim_handle)
@@ -176,7 +178,7 @@ function init(){
                 aspect: canvas.height / canvas.width,
                 zoom: 0.25 + Math.sin(time) * 0.1,
                 lat: Math.PI / 2,
-                lon: 0,
+                lon: -pano_heading,
                 time: time,
                 texture: 0
             });

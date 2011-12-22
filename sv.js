@@ -83,7 +83,7 @@ define([
                         console.error(err);
                     }
                     else{
-                        console.log("Tile loaded:", tile.id);
+                        // console.log("Tile loaded:", tile.id);
                         tile.texture = new core.Texture(gl);
                         tile.texture.setDataWithElement(img, {
                             filter_min: gl.LINEAR,
@@ -151,7 +151,7 @@ define([
                 pano_zoom = zoom;
                 pano_dims = getPanoDimensions(pano_data, pano_zoom);
 
-                console.log("Zoom:", pano_zoom, pano_dims);
+                // console.log("Zoom:", pano_zoom, pano_dims);
 
                 var w = pano_dims.size.x / pano_data.tiles.tileSize.width;
                 var h = pano_dims.size.y / pano_data.tiles.tileSize.height;
