@@ -145,6 +145,10 @@ define([
             this.processQueue();
         };
 
+        this.getPano = function(){
+            return pano_data;
+        };
+
         this.setZoom = function(zoom){
             zoom = Math.min(max_zoom, zoom);
             if(zoom !== pano_zoom){

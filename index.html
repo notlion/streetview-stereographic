@@ -110,6 +110,7 @@ function init(){
 
         var code = document.getElementById("code");
         code.addEventListener("keydown", function(e){
+            e.stopPropagation();
             if(event.keyCode == 9){ // tab
                 e.preventDefault();
 
@@ -122,6 +123,7 @@ function init(){
             }
         }, false);
         code.addEventListener("keyup", function(e){
+            e.stopPropagation();
             if(event.keyCode == 37 || // left
                event.keyCode == 38 || // up
                event.keyCode == 39 || // right
@@ -130,6 +132,33 @@ function init(){
 
             tryShaderCompile();
         }, false);
+
+
+        // Keyboard Driving
+
+        document.addEventListener("keydown", function(e){
+            var data = loader.getPano();
+            if(data && e.keyCode >= 37 && e.keyCode <= 40){
+                var key_heading = (e.keyCode - 38) * (Math.PI / 2);
+                var best_link, best_angle = Number.MAX_VALUE, angle;
+                console.log(key_heading);
+                data.links.forEach(function(link){
+                    angle = util.angleBetween(key_heading, util.degreeToRadian(link.heading));
+                    if(angle < Math.PI * 2 && angle < best_angle){
+                        best_link = link;
+                        best_angle = angle;
+                    }
+                    console.log(util.degreeToRadian(link.heading), angle);
+                });
+                console.log(util.degreeToRadian(best_link.heading));
+                if(best_link){
+                    sv_service.getPanoramaById(best_link.pano, function(data, status){
+                        map.setCenter(data.location.latLng);
+                        onPanoData(data, status);
+                    });
+                }
+            }
+        });
 
 
         // Setup GL
