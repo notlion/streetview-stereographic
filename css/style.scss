@@ -40,8 +40,8 @@ body {
     &:hover {
         @include transition-duration(0.1s);
         @include transition-timing-function(ease-out);
-        background-color: rgba(32, 32, 32, 0.8);
-        @include box-shadow(inset, rgba(0, 0, 0, 0.25), 0px, 0px, 5px);
+        background-color: rgba(24, 28, 22, 0.8);
+        @include box-shadow(inset, rgba(0, 0, 0, 1), 0px, 0px, 5px);
     }
 }
 #code.error {
@@ -54,11 +54,11 @@ body {
 #code-toggle {
     position: absolute;
     left: 12px; top: 12px;
-    stroke: #fff; fill: #000;
+    stroke: #fff; fill: #555;
     stroke-width: 2px;
     cursor: pointer;
     @include transition-property(all);
-    @include transition-duration(0.25s);
+    @include transition-duration(0.2s);
     @include transition-timing-function(ease-out);
 }
 #code-toggle.open {
