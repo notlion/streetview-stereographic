@@ -34,7 +34,7 @@ body {
     resize: none;
     opacity: 1;
     @include transition-property(background-color, opacity);
-    @include transition-duration(0.25s);
+    @include transition-duration(0.2s);
     @include transition-timing-function(ease-in);
 
     &:hover {
@@ -54,7 +54,7 @@ body {
 #code-toggle {
     position: absolute;
     left: 12px; top: 12px;
-    stroke: #fff; fill: #555;
+    stroke: #fff; fill: #444;
     stroke-width: 2px;
     cursor: pointer;
     @include transition-property(all);
@@ -63,6 +63,7 @@ body {
 }
 #code-toggle.open {
     @include transform(rotate(45deg));
+    fill: #000;
 }
 #code-toggle.shut {
     @include transform(rotate(0deg));

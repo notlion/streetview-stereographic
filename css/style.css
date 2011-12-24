@@ -31,11 +31,11 @@ body {
   -ms-transition-property: background-color, opacity;
   -o-transition-property: background-color, opacity;
   transition-property: background-color, opacity;
-  -webkit-transition-duration: 0.25s;
-  -moz-transition-duration: 0.25s;
-  -ms-transition-duration: 0.25s;
-  -o-transition-duration: 0.25s;
-  transition-duration: 0.25s;
+  -webkit-transition-duration: 0.2s;
+  -moz-transition-duration: 0.2s;
+  -ms-transition-duration: 0.2s;
+  -o-transition-duration: 0.2s;
+  transition-duration: 0.2s;
   -webkit-transition-timing-function: ease-in;
   -moz-transition-timing-function: ease-in;
   -ms-transition-timing-function: ease-in;
@@ -70,7 +70,7 @@ body {
   left: 12px;
   top: 12px;
   stroke: #fff;
-  fill: #555;
+  fill: #444;
   stroke-width: 2px;
   cursor: pointer;
   -webkit-transition-property: all;
@@ -94,7 +94,8 @@ body {
   -moz-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   -o-transform: rotate(45deg);
-  transform: rotate(45deg); }
+  transform: rotate(45deg);
+  fill: #000; }
 
 #code-toggle.shut {
   -webkit-transform: rotate(0deg);
