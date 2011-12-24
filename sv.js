@@ -54,6 +54,8 @@ define([
         var queued_coords;
         var num_open_requests = 0;
 
+        var callbacks_by_id = {};
+
         var pano_data;
         var pano_zoom = -1;
         var pano_dims;
@@ -74,6 +76,7 @@ define([
         function Tile(coord){
             this.coord = coord;
             this.id = coord.getKey();
+            this.cancelled = false;
         }
         Tile.prototype = {
             load: function(){
@@ -82,7 +85,7 @@ define([
                     if(err){
                         console.error(err);
                     }
-                    else{
+                    else if(!tile.cancelled){
                         // console.log("Tile loaded:", tile.id);
                         tile.texture = new core.Texture(gl);
                         tile.texture.setDataWithElement(img, {
@@ -91,7 +94,7 @@ define([
                         });
                         loader.draw();
                     }
-                    onTileLoadComplete();
+                    onTileLoadComplete(tile);
                 });
                 num_open_requests++;
             },
@@ -108,10 +111,15 @@ define([
             dispose: function(){
                 if(this.texture)
                     this.texture.dispose();
+                this.cancelled = true;
             }
         };
 
         function onTileLoadComplete(tile){
+            if(tile.coord.zoom === 0 && tile.coord.pano in callbacks_by_id){
+                callbacks_by_id[tile.coord.pano]();
+                delete callbacks_by_id[tile.coord.pano];
+            }
             if(--num_open_requests === 0 && pano_zoom < max_zoom){
                 loader.setZoom(pano_zoom + 1);
                 loader.queueAll();
@@ -138,8 +146,12 @@ define([
             }
         };
 
-        this.setPano = function(data){
+        this.setPano = function(data, callback){
             pano_data = data;
+
+            if(callback)
+                callbacks_by_id[data.location.pano] = callback;
+
             this.setZoom(0);
             this.queueAll();
             this.processQueue();
