@@ -1,52 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-<style type="text/css">
-
-html { height: 100% }
-body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
-#pano {
-    float: left;
-    width: 50%;
-    height: 100%;
-}
-#code {
-    position: absolute;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    background-color: transparent;
-    font-family: Monospace;
-    font-size: 14px;
-    font-weight: bold;
-    white-space: pre-wrap;
-    text-shadow: black 0px 1px 3px;
-    outline: none;
-    resize: none;
-}
-#code.error {
-    color: #f00;
-}
-#code:hover {
-    background-color: rgba(32, 32, 32, 0.8);
-    box-shadow: inset rgba(0, 0, 0, 0.25) 0px 0px 5px;
-}
-#glcanvas {
-    width: 100%;
-    height: 100%;
-}
-#map {
-    width: auto;
-    height: 100%;
-}
-#map, #glcanvas {
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-}
-
-</style>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+<link href="css/style.css" media="all" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="lib/embr/src/lib/require.js"></script>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
 <script type="text/javascript">
@@ -56,7 +12,7 @@ body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
 function init(){
     require({
         paths: {
-            "embr": "lib/embr/src/"
+            "embr": "lib/embr/src/",
         }
     },
     [
@@ -100,11 +56,11 @@ function init(){
             try{
                 pano_shader.compile(pano_shader_src_vert, code.value);
                 pano_shader.link();
-                code.className = "";
+                code.classList.remove("error");
                 console.log("Compile Successful!");
             }
             catch(err){
-                code.className = "error";
+                code.classList.add("error");
                 console.error("Error compiling shader: " + err);
             }
         }
@@ -132,6 +88,17 @@ function init(){
                 return;
 
             tryShaderCompile();
+        }, false);
+
+        var code_toggle = document.getElementById("code-toggle");
+        var code_open = false;
+        code_toggle.addEventListener("click", function(e){
+            code_open = !code_open;
+            code_toggle.setAttribute("class", code_open ? "open" : "shut");
+            if(code_open)
+                code.classList.remove("shut");
+            else
+                code.classList.add("shut");
         }, false);
 
 
@@ -173,7 +140,7 @@ function init(){
 
         // Setup GL
 
-        var canvas = document.getElementById("glcanvas");
+        var canvas = document.getElementById("gl-canvas");
         // var gl = core.Util.glWrapContextWithErrorChecks(util.getGLContext(canvas));
         var gl = util.getGLContext(canvas);
 
@@ -280,8 +247,8 @@ if(!window.cancelAnimationFrame){
 </head>
 <body>
     <div id="pano">
-        <canvas id="glcanvas"></canvas>
-<textarea id="code">
+        <canvas id="gl-canvas"></canvas>
+<textarea id="code" class="shut">
 uniform sampler2D texture;
 uniform float zoom, lat, lon, aspect, time;
 
@@ -304,6 +271,12 @@ void main(){
     gl_FragColor = texture2D(texture, vec2(lon_out, lat_out) / rads + .5);
 }
 </textarea>
+        <svg id="code-toggle" class="shut" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(15,15)scale(13)">
+                <circle cx="0" cy="0" r="1" vector-effect="non-scaling-stroke"/>
+                <path d="M -1,0 L 1,0 M 0,-1 L 0,1" vector-effect="non-scaling-stroke" transform="scale(0.5)"/>
+            </g>
+        </svg>
     </div>
     <div id="map"></div>
 </body>
