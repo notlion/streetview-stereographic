@@ -151,9 +151,10 @@ function init(){
 
         var canvas = document.getElementById("gl-canvas");
         util.addMouseWheelListener(canvas, function(e){
-            pano_zoom = core.math.clamp(pano_zoom + e.delta * 0.005, 0, 2);
+            pano_zoom_goal = core.math.clamp(pano_zoom + e.delta * 0.005, 0, 2);
         });
         var pano_zoom = 0.4;
+        var pano_zoom_goal = pano_zoom;
 
 
         // Setup GL
@@ -196,6 +197,7 @@ function init(){
             gl.viewport(0, 0, canvas.width, canvas.height);
             loader.framebuffer.bindTexture(0);
             var time = (Date.now() - start_time) / 1000;
+            pano_zoom = core.math.lerp(pano_zoom, pano_zoom_goal, 0.5);
             pano_shader.use({
                 projection: projection,
                 aspect: canvas.height / canvas.width,
@@ -276,16 +278,16 @@ void main(){
     vec2 pnt = (v_texcoord - .5) * vec2(1., aspect);
     float p = length(pnt);
     float c = 2. * atan(p / zoom);
-    float cc = cos(c);
+    float cc = sin(c + PI_2);
     float sc = sin(c);
-    float cl = cos(lat);
+    float cl = sin(lat + PI_2);
     float sl = sin(lat);
     float lat_out = asin(cc * sl + (pnt.y * sc * cl) / p);
     float lon_out = lon + atan(pnt.x * sc, (p * cl * cc - pnt.y * sl * sc));
     gl_FragColor = texture2D(texture, vec2(lon_out, lat_out) / rads + .5);
 }
 </textarea>
-        <svg id="code-toggle" class="shut" width="30" height="30">
+        <svg id="code-toggle" title="Toggle Shader Source" class="shut" width="30" height="30" version="1.1">
             <g transform="translate(15,15)scale(13)">
                 <circle cx="0" cy="0" r="1" vector-effect="non-scaling-stroke"/>
                 <path d="M -1,0 L 1,0 M 0,-1 L 0,1" vector-effect="non-scaling-stroke" transform="scale(0.55)"/>
