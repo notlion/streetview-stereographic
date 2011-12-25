@@ -20,7 +20,8 @@ function init(){
         "embr/material",
         "util",
         "sv"
-    ], function(core, material, util, sv){
+    ],
+    function(core, material, util, sv){
 
         // Setup GoogMaps
 
@@ -90,6 +91,9 @@ function init(){
             tryShaderCompile();
         }, false);
 
+
+        // Setup Code Toggle Animation
+
         var code_toggle = document.getElementById("code-toggle");
         var code_open = false;
         code_toggle.addEventListener("click", function(e){
@@ -108,7 +112,7 @@ function init(){
         }, false);
 
 
-        // Keyboard Driving
+        // Setup Keyboard Driving
 
         document.addEventListener("keydown", function(e){
             var data = loader.getPano();
@@ -143,10 +147,17 @@ function init(){
             }
         });
 
+        // Mouse Wheel Pano Zoom
+
+        var canvas = document.getElementById("gl-canvas");
+        util.addMouseWheelListener(canvas, function(e){
+            pano_zoom = core.math.clamp(pano_zoom + e.delta * 0.005, 0, 2);
+        });
+        var pano_zoom = 0.4;
+
 
         // Setup GL
 
-        var canvas = document.getElementById("gl-canvas");
         // var gl = core.Util.glWrapContextWithErrorChecks(util.getGLContext(canvas));
         var gl = util.getGLContext(canvas);
 
@@ -183,13 +194,12 @@ function init(){
             refresh();
 
             gl.viewport(0, 0, canvas.width, canvas.height);
-
             loader.framebuffer.bindTexture(0);
             var time = (Date.now() - start_time) / 1000;
             pano_shader.use({
                 projection: projection,
                 aspect: canvas.height / canvas.width,
-                zoom: 0.15,// + Math.sin(time) * 0.1,
+                zoom: Math.pow(pano_zoom, 2),
                 lat: Math.PI / 2,
                 lon: -pano_heading,
                 time: time,
@@ -211,8 +221,6 @@ function init(){
             // Size Canvas
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
-
-            // refresh();
         }
 
         window.addEventListener("resize", onResize, false);

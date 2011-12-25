@@ -13,6 +13,11 @@ define(function(){
         "oTransitionEnd"
     ];
 
+    var events_mouse_wheel = [
+        "mousewheel",
+        "DOMMouseScroll"
+    ];
+
     // Listen for multiple events and remove all listeners after the first responds
     function addMultiEventListener(element, events, callback, once){
         function onEvent(e){
@@ -80,6 +85,16 @@ define(function(){
 
         addTransitionEndListener: function(element, callback, once){
             addMultiEventListener(element, events_transition_end, callback, once);
+        },
+
+        addMouseWheelListener: function(element, callback){
+            addMultiEventListener(element, events_mouse_wheel, function(e){
+                if(e.wheelDelta) // Webkit
+                    e.delta = event.wheelDelta / 120;
+                else if(e.detail) // Firefox
+                    e.delta = -e.detail;
+                callback(e);
+            }, false);
         }
 
     };
