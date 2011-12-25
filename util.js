@@ -6,6 +6,28 @@ define(function(){
     var M_PI_180 = M_PI / 180;
     var M_2PI = M_PI * 2;
 
+    var events_transition_end = [
+        "webkitTransitionEnd",
+        "transitionend",
+        "MSTransitionEnd",
+        "oTransitionEnd"
+    ];
+
+    // Listen for multiple events and remove all listeners after the first responds
+    function addMultiEventListener(element, events, callback, once){
+        function onEvent(e){
+            if(once){
+                events.forEach(function(event){
+                    element.removeEventListener(event, onEvent);
+                });
+            }
+            callback(e);
+        }
+        events.forEach(function(event){
+            element.addEventListener(event, onEvent);
+        });
+    }
+
     return {
 
         getGLContext: function(canvas){
@@ -54,6 +76,10 @@ define(function(){
             while(h2 > M_2PI) h2 -= M_2PI;
             var a = Math.abs(h1 - h2);
             return a > M_PI ? M_2PI - a : a;
+        },
+
+        addTransitionEndListener: function(element, callback, once){
+            addMultiEventListener(element, events_transition_end, callback, once);
         }
 
     };

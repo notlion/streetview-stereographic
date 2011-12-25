@@ -95,10 +95,16 @@ function init(){
         code_toggle.addEventListener("click", function(e){
             code_open = !code_open;
             code_toggle.setAttribute("class", code_open ? "open" : "shut");
-            if(code_open)
+            if(code_open){
+                code.style.visibility = "visible";
                 code.classList.remove("shut");
-            else
+            }
+            else{
+                util.addTransitionEndListener(code, function(e){
+                    code.style.visibility = "hidden";
+                }, true);
                 code.classList.add("shut");
+            }
         }, false);
 
 
@@ -183,7 +189,7 @@ function init(){
             pano_shader.use({
                 projection: projection,
                 aspect: canvas.height / canvas.width,
-                zoom: 0.25 + Math.sin(time) * 0.1,
+                zoom: 0.15,// + Math.sin(time) * 0.1,
                 lat: Math.PI / 2,
                 lon: -pano_heading,
                 time: time,
@@ -248,7 +254,7 @@ if(!window.cancelAnimationFrame){
 <body>
     <div id="pano">
         <canvas id="gl-canvas"></canvas>
-<textarea id="code" class="shut">
+<textarea id="code" class="shut" style="visibility:hidden">
 uniform sampler2D texture;
 uniform float zoom, lat, lon, aspect, time;
 
