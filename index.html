@@ -217,8 +217,8 @@ function init(){
             gl.viewport(0, 0, canvas.width, canvas.height);
 
             loader.framebuffer.bindTexture(0);
-            pano_zoom = core.math.lerp(pano_zoom, pano_zoom_goal, 0.5);
-            pano_orientation.slerp(arcball.orientation, 0.5).normalize();
+            pano_zoom = core.math.lerp(pano_zoom, pano_zoom_goal, 0.33);
+            pano_orientation.slerp(arcball.orientation, 0.33).normalize();
             pano_shader.use({
                 projection: projection,
                 aspect: canvas.height / canvas.width,
