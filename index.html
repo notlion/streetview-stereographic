@@ -18,10 +18,11 @@ function init(){
     [
         "embr/core",
         "embr/material",
+        "embr/Arcball",
         "util",
         "sv"
     ],
-    function(core, material, util, sv){
+    function(core, material, Arcball, util, sv){
 
         // Setup GoogMaps
 
@@ -151,10 +152,27 @@ function init(){
 
         var canvas = document.getElementById("gl-canvas");
         util.addMouseWheelListener(canvas, function(e){
-            pano_zoom_goal = core.math.clamp(pano_zoom + e.delta * 0.005, 0, 2);
+            pano_zoom_goal = core.math.clamp(pano_zoom - e.delta * 0.05, 0.1, 10);
         });
-        var pano_zoom = 0.4;
+        var pano_zoom = 2;
         var pano_zoom_goal = pano_zoom;
+
+
+        // Arcball
+
+        var arcball = new Arcball();
+        arcball.inverted = true;
+        var pano_orientation = core.Quat.identity();
+        function onCanvasMouseDrag(e){
+            arcball.drag(e.x, e.y);
+        }
+        canvas.addEventListener("mousedown", function(e){
+            arcball.down(e.x, e.y);
+            canvas.addEventListener("mousemove", onCanvasMouseDrag);
+        });
+        canvas.addEventListener("mouseup", function(e){
+            canvas.removeEventListener("mousemove", onCanvasMouseDrag);
+        });
 
 
         // Setup GL
@@ -194,16 +212,18 @@ function init(){
             anim_handle = null;
             refresh();
 
-            gl.viewport(0, 0, canvas.width, canvas.height);
-            loader.framebuffer.bindTexture(0);
             var time = (Date.now() - start_time) / 1000;
+
+            gl.viewport(0, 0, canvas.width, canvas.height);
+
+            loader.framebuffer.bindTexture(0);
             pano_zoom = core.math.lerp(pano_zoom, pano_zoom_goal, 0.5);
+            pano_orientation.slerp(arcball.orientation, 0.5).normalize();
             pano_shader.use({
                 projection: projection,
                 aspect: canvas.height / canvas.width,
-                zoom: Math.pow(pano_zoom, 2),
-                lat: Math.PI / 2,
-                lon: -pano_heading,
+                scale: pano_zoom * pano_zoom,
+                transform: pano_orientation.toMat4().mul(new core.Mat4().rotate(pano_heading + Math.PI / 2, 0,0,1)),
                 time: time,
                 texture: 0
             });
@@ -220,9 +240,11 @@ function init(){
             code.style.width = (pano.offsetWidth - (padding + margin) * 2) + "px";
             code.style.height = (pano.offsetHeight - (padding + margin) * 2) + "px";
 
-            // Size Canvas
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
+
+            arcball.center = new core.Vec2(canvas.width / 2, canvas.height / 2);
+            arcball.radius = arcball.center.length();
         }
 
         window.addEventListener("resize", onResize, false);
@@ -266,7 +288,8 @@ if(!window.cancelAnimationFrame){
         <canvas id="gl-canvas"></canvas>
 <textarea id="code" class="shut" style="visibility:hidden">
 uniform sampler2D texture;
-uniform float zoom, lat, lon, aspect, time;
+uniform float scale, aspect, time;
+uniform mat3 transform;
 
 varying vec2 v_texcoord;
 
@@ -275,16 +298,23 @@ varying vec2 v_texcoord;
 
 void main(){
     vec2 rads = vec2(PI * 2., PI);
-    vec2 pnt = (v_texcoord - .5) * vec2(1., aspect);
-    float p = length(pnt);
-    float c = 2. * atan(p / zoom);
-    float cc = sin(c + PI_2);
-    float sc = sin(c);
-    float cl = sin(lat + PI_2);
-    float sl = sin(lat);
-    float lat_out = asin(cc * sl + (pnt.y * sc * cl) / p);
-    float lon_out = lon + atan(pnt.x * sc, (p * cl * cc - pnt.y * sl * sc));
-    gl_FragColor = texture2D(texture, vec2(lon_out, lat_out) / rads + .5);
+    float x = (v_texcoord.x - .5) * scale;
+    float y = (v_texcoord.y - .5) * scale * aspect;
+
+    // Project to Sphere
+    vec3 sphere_pnt = vec3(
+        (2. * x) / (1. + x*x + y*y),
+        (2. * y) / (1. + x*x + y*y),
+        (x*x + y*y - 1.) / (1. + x*x + y*y)
+    );
+    sphere_pnt *= transform;
+
+    // Convert to Spherical Coordinates
+    float r = length(sphere_pnt);
+    float lon = atan(sphere_pnt.y, sphere_pnt.x);
+    float lat = acos(sphere_pnt.z / r);
+
+    gl_FragColor = texture2D(texture, vec2(lon, lat) / rads);
 }
 </textarea>
         <svg id="code-toggle" title="Toggle Shader Source" class="shut" width="30" height="30" version="1.1">

@@ -36,7 +36,6 @@ body {
     @include transition-property(background-color, opacity);
     @include transition-duration(0.2s);
     @include transition-timing-function(ease-in);
-
     &:hover {
         @include transition-duration(0.1s);
         @include transition-timing-function(ease-out);
