@@ -70,19 +70,6 @@ define(function(){
             return img;
         },
 
-        degreeToRadian: function(deg){
-            return deg * M_PI_180;
-        },
-
-        angleBetween: function(h1, h2){
-            while(h1 < 0)     h1 += M_2PI;
-            while(h1 > M_2PI) h1 -= M_2PI;
-            while(h2 < 0)     h2 += M_2PI;
-            while(h2 > M_2PI) h2 -= M_2PI;
-            var a = Math.abs(h1 - h2);
-            return a > M_PI ? M_2PI - a : a;
-        },
-
         addTransitionEndListener: function(element, callback, once){
             addMultiEventListener(element, events_transition_end, callback, once);
         },
@@ -95,6 +82,19 @@ define(function(){
                     e.delta = -e.detail;
                 callback(e);
             }, false);
+        },
+
+        degreeToRadian: function(deg){
+            return deg * M_PI_180;
+        },
+
+        angleBetween: function(h1, h2){
+            while(h1 < 0)     h1 += M_2PI;
+            while(h1 > M_2PI) h1 -= M_2PI;
+            while(h2 < 0)     h2 += M_2PI;
+            while(h2 > M_2PI) h2 -= M_2PI;
+            var a = Math.abs(h1 - h2);
+            return a > M_PI ? M_2PI - a : a;
         }
 
     };

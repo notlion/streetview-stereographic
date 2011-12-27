@@ -7,10 +7,15 @@ body {
   padding: 0;
   overflow: hidden; }
 
-#pano {
+#left, #right {
   float: left;
-  width: 50%;
   height: 100%; }
+
+#left {
+  width: 50%; }
+
+#right {
+  width: auto; }
 
 #code {
   position: absolute;
@@ -53,11 +58,11 @@ body {
     -o-transition-timing-function: ease-out;
     transition-timing-function: ease-out;
     background-color: rgba(24, 28, 22, 0.8);
-    -webkit-box-shadow: inset, black, 0px, 0px, 5px;
-    -moz-box-shadow: inset, black, 0px, 0px, 5px;
-    -ms-box-shadow: inset, black, 0px, 0px, 5px;
-    -o-box-shadow: inset, black, 0px, 0px, 5px;
-    box-shadow: inset, black, 0px, 0px, 5px; }
+    -webkit-box-shadow: inset rgba(0, 0, 0, 0.5) 0px 0px 6px;
+    -moz-box-shadow: inset rgba(0, 0, 0, 0.5) 0px 0px 6px;
+    -ms-box-shadow: inset rgba(0, 0, 0, 0.5) 0px 0px 6px;
+    -o-box-shadow: inset rgba(0, 0, 0, 0.5) 0px 0px 6px;
+    box-shadow: inset rgba(0, 0, 0, 0.5) 0px 0px 6px; }
 
 #code.error {
   color: #f00; }
@@ -113,11 +118,32 @@ body {
   -ms-user-select: none; }
 
 #map {
-  width: auto;
+  width: 100%;
   height: 100%;
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none; }
+
+#ribbon {
+  width: 100%;
+  padding: 10px 20px 10px 20px;
+  background-color: #e2e4e0;
+  -webkit-box-shadow: inset rgba(0, 0, 0, 0.1) 0px 1px 6px;
+  -moz-box-shadow: inset rgba(0, 0, 0, 0.1) 0px 1px 6px;
+  -ms-box-shadow: inset rgba(0, 0, 0, 0.1) 0px 1px 6px;
+  -o-box-shadow: inset rgba(0, 0, 0, 0.1) 0px 1px 6px;
+  box-shadow: inset rgba(0, 0, 0, 0.1) 0px 1px 6px; }
+
+#location {
+  width: 100%;
+  border: 0;
+  padding: 5px;
+  outline: 0;
+  font-family: Helvetica, sans-serif;
+  font-size: 18px;
+  text-align: baseline;
+  color: #666;
+  background-color: transparent; }
 
 .grabbable {
   cursor: grab;
