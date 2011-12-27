@@ -164,11 +164,11 @@ function init(){
         arcball.inverted = true;
         var pano_orientation = core.Quat.identity();
         function onCanvasMouseDrag(e){
-            arcball.drag(e.x, e.y);
+            arcball.drag(e.clientX, e.clientY);
         }
         canvas.addEventListener("mousedown", function(e){
             canvas.classList.add("grabbing");
-            arcball.down(e.x, e.y);
+            arcball.down(e.clientX, e.clientY);
             canvas.addEventListener("mousemove", onCanvasMouseDrag);
         });
         canvas.addEventListener("mouseup", function(e){
