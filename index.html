@@ -167,10 +167,12 @@ function init(){
             arcball.drag(e.x, e.y);
         }
         canvas.addEventListener("mousedown", function(e){
+            canvas.classList.add("grabbing");
             arcball.down(e.x, e.y);
             canvas.addEventListener("mousemove", onCanvasMouseDrag);
         });
         canvas.addEventListener("mouseup", function(e){
+            canvas.classList.remove("grabbing");
             canvas.removeEventListener("mousemove", onCanvasMouseDrag);
         });
 
@@ -285,7 +287,7 @@ if(!window.cancelAnimationFrame){
 </head>
 <body>
     <div id="pano">
-        <canvas id="gl-canvas"></canvas>
+        <canvas id="gl-canvas" class="grabbable"></canvas>
 <textarea id="code" class="shut" style="visibility:hidden">
 uniform sampler2D texture;
 uniform float scale, aspect, time;

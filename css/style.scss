@@ -71,6 +71,7 @@ body {
 #gl-canvas {
     width: 100%;
     height: 100%;
+    cursor: hand;
     @include user-select(none);
 }
 
@@ -78,4 +79,15 @@ body {
     width: auto;
     height: 100%;
     @include user-select(none);
+}
+
+.grabbable {
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+.grabbing {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
 }
