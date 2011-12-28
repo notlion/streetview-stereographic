@@ -126,19 +126,14 @@ body {
 
 #ribbon {
   padding: 10px 0 10px 0;
-  background-color: #f2f3f0;
-  -webkit-box-shadow: inset rgba(0, 0, 0, 0.2) 1px 1px 4px;
-  -moz-box-shadow: inset rgba(0, 0, 0, 0.2) 1px 1px 4px;
-  -ms-box-shadow: inset rgba(0, 0, 0, 0.2) 1px 1px 4px;
-  -o-box-shadow: inset rgba(0, 0, 0, 0.2) 1px 1px 4px;
-  box-shadow: inset rgba(0, 0, 0, 0.2) 1px 1px 4px; }
+  background-color: #f2f3f0; }
 
 #location {
   width: 50%;
   border: 0;
   margin: 0 15px 0 15px;
   padding: 3px 20px 3px 20px;
-  border: solid 2px #0098cc;
+  border: solid 2px #888;
   outline: 0;
   font-family: Helvetica, sans-serif;
   font-size: 14px;
@@ -146,7 +141,11 @@ body {
   letter-spacing: -0.05em;
   color: #000;
   background-color: #fff;
-  border-radius: 99px;
+  border-radius: 99px; }
+  #location:focus {
+    border-color: #0098cc; }
+
+#ribbon, #location {
   -webkit-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
   -moz-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
   -ms-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;

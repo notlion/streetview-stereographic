@@ -89,7 +89,6 @@ body {
 #ribbon {
     padding: 10px 0 10px 0;
     background-color: #f2f3f0;
-    @include box-shadow(inset rgba(0,0,0,0.2) 1px 1px 4px);
 }
 
 #location {
@@ -97,7 +96,7 @@ body {
     border: 0;
     margin: 0 15px 0 15px;
     padding: 3px 20px 3px 20px;
-    border: solid 2px #0098cc;
+    border: solid 2px #888;
     outline: 0;
     font-family: Helvetica, sans-serif;
     font-size: 14px;
@@ -106,6 +105,12 @@ body {
     color: #000;
     background-color: #fff;
     border-radius: 99px;
+    &:focus {
+        border-color: #0098cc;
+    }
+}
+
+#ribbon, #location {
     @include box-shadow(inset rgba(0,0,0,0.2) 0px 1px 4px);
 }
 
