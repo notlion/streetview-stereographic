@@ -32,6 +32,7 @@ function init(){
         var code = document.getElementById("code");
         var code_toggle = document.getElementById("code-toggle");
         var mapui = document.getElementById("mapui");
+        var panoui = document.getElementById("panoui");
         var location = document.getElementById("location");
         var above = document.getElementById("above");
         var below = document.getElementById("below");
@@ -296,7 +297,7 @@ function init(){
             code.style.top = margin + "px";
             code.style.padding = padding + "px";
             code.style.width = (left.offsetWidth - (padding + margin) * 2) + "px";
-            code.style.height = (left.offsetHeight - (padding + margin) * 2) + "px";
+            code.style.height = (left.offsetHeight - (padding + margin) * 2 - panoui.clientHeight) + "px";
 
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
