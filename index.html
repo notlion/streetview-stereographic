@@ -176,6 +176,7 @@ function init(){
             }
         }, false);
 
+
         // Replacement Map Zoom (can't disable just arrow keys)
 
         document.addEventListener("keypress", function(e){
@@ -191,7 +192,7 @@ function init(){
         // Mouse Wheel Pano Zoom
 
         util.addMouseWheelListener(canvas, function(e){
-            pano_zoom_goal = core.math.clamp(pano_zoom - e.delta * 0.05, 0.1, 10);
+            pano_zoom_goal = core.math.clamp(pano_zoom - e.delta * 0.0333, 0.5, 10);
         });
         var pano_zoom = 2;
         var pano_zoom_goal = pano_zoom;
@@ -267,7 +268,7 @@ function init(){
             pano_shader.use({
                 projection: projection,
                 aspect: canvas.height / canvas.width,
-                scale: pano_zoom * pano_zoom,
+                scale: Math.pow(pano_zoom, 3),
                 transform: pano_orientation.toMat4().mul(new core.Mat4().rotate(pano_heading + Math.PI / 2, 0,0,1)),
                 time: time,
                 texture: 0
@@ -363,7 +364,11 @@ void main(){
     <div id="right">
         <div id="map"></div>
         <div id="ribbon">
-            <input id="location" type="text" value="hello" tabindex="0" spellcheck="false"/>
+            <div class="input-border">
+                <input id="location" type="text" value="hello" tabindex="0" spellcheck="false"
+                    onfocus="this.parentNode.classList.add('focus')"
+                    onblur="this.parentNode.classList.remove('focus')"/>
+            </div>
         </div>
     </div>
 </body>

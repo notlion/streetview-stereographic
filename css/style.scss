@@ -11,6 +11,7 @@ html {
 }
 body {
     height: 100%; margin: 0; padding: 0; overflow: hidden;
+    scroll: none;
 }
 
 #left, #right {
@@ -47,12 +48,12 @@ body {
         background-color: rgba(24, 28, 22, 0.8);
         @include box-shadow(inset rgba(0, 0, 0, 0.5) 0px 0px 6px);
     }
-}
-#code.error {
-    color: #f00;
-}
-#code.shut {
-    opacity: 0;
+    &.error {
+        color: #f00;
+    }
+    &.shut {
+        opacity: 0;
+    }
 }
 
 #code-toggle {
@@ -64,13 +65,13 @@ body {
     @include transition-property(all);
     @include transition-duration(0.2s);
     @include transition-timing-function(ease-out);
-}
-#code-toggle.open {
-    @include transform(rotate(45deg));
-    fill: #000;
-}
-#code-toggle.shut {
-    @include transform(rotate(0deg));
+    &.open {
+        @include transform(rotate(45deg));
+        fill: #000;
+    }
+    &.shut {
+        @include transform(rotate(0deg));
+    }
 }
 
 #gl-canvas {
@@ -91,27 +92,36 @@ body {
     background-color: #f2f3f0;
 }
 
-#location {
-    width: 50%;
-    border: 0;
-    margin: 0 15px 0 15px;
-    padding: 3px 20px 3px 20px;
-    border: solid 2px #999;
-    outline: 0;
+#ribbon, .input-border {
+    @include box-shadow(inset rgba(0,0,0,0.2) 0px 1px 4px);
+}
+
+#ribbon input {
     font-family: Helvetica, sans-serif;
     font-size: 14px;
     font-weight: bold;
     letter-spacing: -0.05em;
+    line-height: 1.5em;
+}
+
+.input-border {
+    margin: 0 15px 0 15px;
+    padding: 0 20px 0 20px;
+    border: solid 2px #999;
     color: #000;
     background-color: #fff;
     border-radius: 99px;
-    &:focus {
+    &.focus {
         border-color: #0098cc;
     }
-}
-
-#ribbon, #location {
-    @include box-shadow(inset rgba(0,0,0,0.2) 0px 1px 4px);
+    & input {
+        width: 100%;
+        border: 0;
+        margin: 0;
+        padding: 0;
+        outline: 0;
+        background-color: transparent;
+    }
 }
 
 .grabbable {

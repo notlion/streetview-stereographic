@@ -5,7 +5,8 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden; }
+  overflow: hidden;
+  scroll: none; }
 
 #left, #right {
   float: left;
@@ -63,12 +64,10 @@ body {
     -ms-box-shadow: inset rgba(0, 0, 0, 0.5) 0px 0px 6px;
     -o-box-shadow: inset rgba(0, 0, 0, 0.5) 0px 0px 6px;
     box-shadow: inset rgba(0, 0, 0, 0.5) 0px 0px 6px; }
-
-#code.error {
-  color: #f00; }
-
-#code.shut {
-  opacity: 0; }
+  #code.error {
+    color: #f00; }
+  #code.shut {
+    opacity: 0; }
 
 #code-toggle {
   position: absolute;
@@ -93,21 +92,19 @@ body {
   -ms-transition-timing-function: ease-out;
   -o-transition-timing-function: ease-out;
   transition-timing-function: ease-out; }
-
-#code-toggle.open {
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  -o-transform: rotate(45deg);
-  transform: rotate(45deg);
-  fill: #000; }
-
-#code-toggle.shut {
-  -webkit-transform: rotate(0deg);
-  -moz-transform: rotate(0deg);
-  -ms-transform: rotate(0deg);
-  -o-transform: rotate(0deg);
-  transform: rotate(0deg); }
+  #code-toggle.open {
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+    fill: #000; }
+  #code-toggle.shut {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg); }
 
 #gl-canvas {
   width: 100%;
@@ -128,29 +125,36 @@ body {
   padding: 10px 0 10px 0;
   background-color: #f2f3f0; }
 
-#location {
-  width: 50%;
-  border: 0;
-  margin: 0 15px 0 15px;
-  padding: 3px 20px 3px 20px;
-  border: solid 2px #999;
-  outline: 0;
-  font-family: Helvetica, sans-serif;
-  font-size: 14px;
-  font-weight: bold;
-  letter-spacing: -0.05em;
-  color: #000;
-  background-color: #fff;
-  border-radius: 99px; }
-  #location:focus {
-    border-color: #0098cc; }
-
-#ribbon, #location {
+#ribbon, .input-border {
   -webkit-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
   -moz-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
   -ms-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
   -o-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
   box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px; }
+
+#ribbon input {
+  font-family: Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: -0.05em;
+  line-height: 1.5em; }
+
+.input-border {
+  margin: 0 15px 0 15px;
+  padding: 0 20px 0 20px;
+  border: solid 2px #999;
+  color: #000;
+  background-color: #fff;
+  border-radius: 99px; }
+  .input-border.focus {
+    border-color: #0098cc; }
+  .input-border input {
+    width: 100%;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    background-color: transparent; }
 
 .grabbable {
   cursor: grab;
