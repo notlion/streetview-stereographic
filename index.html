@@ -205,14 +205,17 @@ function init(){
         function onCanvasMouseDrag(e){
             arcball.drag(e.clientX, e.clientY);
         }
+        function onCanvasMouseUp(e){
+            canvas.classList.remove("grabbing");
+            canvas.removeEventListener("mousemove", onCanvasMouseDrag);
+            document.removeEventListener("mouseup", onCanvasMouseUp);
+        }
         canvas.addEventListener("mousedown", function(e){
+            e.preventDefault();
             canvas.classList.add("grabbing");
             arcball.down(e.clientX, e.clientY);
             canvas.addEventListener("mousemove", onCanvasMouseDrag);
-        });
-        canvas.addEventListener("mouseup", function(e){
-            canvas.classList.remove("grabbing");
-            canvas.removeEventListener("mousemove", onCanvasMouseDrag);
+            document.addEventListener("mouseup", onCanvasMouseUp, true);
         });
 
 

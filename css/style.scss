@@ -34,7 +34,7 @@ body {
     font-size: 14px;
     font-weight: bold;
     white-space: pre-wrap;
-    text-shadow: black 0px 1px 3px;
+    text-shadow: #000 0px 1px 3px;
     outline: none;
     resize: none;
     opacity: 1;
@@ -87,22 +87,26 @@ body {
 }
 
 #ribbon {
-    width: 100%;
-    padding: 10px 20px 10px 20px;
-    background-color: #e2e4e0;
-    @include box-shadow(inset rgba(0, 0, 0, 0.1) 0px 1px 6px);
+    padding: 10px 0 10px 0;
+    background-color: #f2f3f0;
+    @include box-shadow(inset rgba(0,0,0,0.2) 1px 1px 4px);
 }
 
 #location {
-    width: 100%;
+    width: 50%;
     border: 0;
-    padding: 5px;
+    margin: 0 15px 0 15px;
+    padding: 3px 20px 3px 20px;
+    border: solid 2px #0098cc;
     outline: 0;
     font-family: Helvetica, sans-serif;
-    font-size: 18px;
-    text-align: baseline;
-    color: #666;
-    background-color: transparent;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: -0.05em;
+    color: #000;
+    background-color: #fff;
+    border-radius: 99px;
+    @include box-shadow(inset rgba(0,0,0,0.2) 0px 1px 4px);
 }
 
 .grabbable {
