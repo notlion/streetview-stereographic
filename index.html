@@ -31,8 +31,10 @@ function init(){
         var canvas = document.getElementById("gl-canvas");
         var code = document.getElementById("code");
         var code_toggle = document.getElementById("code-toggle");
-        var ribbon = document.getElementById("ribbon");
+        var mapui = document.getElementById("mapui");
         var location = document.getElementById("location");
+        var above = document.getElementById("above");
+        var below = document.getElementById("below");
 
 
         // Setup GoogMaps
@@ -219,6 +221,17 @@ function init(){
             document.addEventListener("mouseup", onCanvasMouseUp, true);
         });
 
+        above.addEventListener("click", function(e){
+            e.preventDefault();
+            arcball.orientation.reset();
+            console.log("above");
+        });
+        below.addEventListener("click", function(e){
+            e.preventDefault();
+            arcball.orientation.reset().rotate(Math.PI, 1,0,0);
+            console.log("below");
+        });
+
 
         // Setup GL
 
@@ -289,7 +302,7 @@ function init(){
             canvas.height = canvas.clientHeight;
 
             right.style.width = (window.innerWidth - left.offsetWidth) + "px";
-            map.getDiv().style.height = (right.clientHeight - ribbon.offsetHeight) + "px";
+            map.getDiv().style.height = (right.clientHeight - mapui.offsetHeight) + "px";
 
             arcball.center = new core.Vec2(canvas.width / 2, canvas.height / 2);
             arcball.radius = arcball.center.length();
@@ -360,10 +373,14 @@ void main(){
                 <path d="M -1,0 L 1,0 M 0,-1 L 0,1" vector-effect="non-scaling-stroke" transform="scale(0.55)"/>
             </g>
         </svg>
+        <div id="panoui">
+            <a id="above" href="#">above</a>
+            <a id="below" href="#">below</a>
+        </div>
     </div>
     <div id="right">
         <div id="map"></div>
-        <div id="ribbon">
+        <div id="mapui">
             <div class="input-border">
                 <input id="location" type="text" value="hello" tabindex="0" spellcheck="false"
                     onfocus="this.parentNode.classList.add('focus')"

@@ -121,18 +121,35 @@ body {
   -webkit-user-select: none;
   -ms-user-select: none; }
 
-#ribbon {
+#mapui {
   padding: 10px 0 10px 0;
   background-color: #f2f3f0; }
 
-#ribbon, .input-border {
+#mapui, .input-border {
   -webkit-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
   -moz-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
   -ms-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
   -o-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
   box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px; }
 
-#ribbon input {
+#panoui {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  margin: 14px; }
+  #panoui a {
+    float: left;
+    margin: 0 5px 0 0;
+    padding: 1px 10px 1px 10px;
+    border-radius: 99px;
+    border: solid 2px #fff;
+    background-color: #444;
+    color: #fff;
+    text-decoration: none; }
+    #panoui a:hover {
+      background-color: #0098cc; }
+
+#mapui input, #panoui a {
   font-family: Helvetica, sans-serif;
   font-size: 14px;
   font-weight: bold;
