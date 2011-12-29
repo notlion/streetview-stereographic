@@ -62,9 +62,16 @@ body {
     stroke: #fff; fill: #444;
     stroke-width: 2px;
     cursor: pointer;
-    @include transition-property(all);
-    @include transition-duration(0.2s);
+    -webkit-transition-property: -webkit-transform;
+    -moz-transition-property: -moz-transform;
+    -ms-transition-property: -ms-transform;
+    -o-transition-property: -o-transform;
+    transition-property: transform;
     @include transition-timing-function(ease-out);
+    @include transition-duration(0.2s);
+    &:hover {
+        fill: #0098cc;
+    }
     &.open {
         @include transform(rotate(45deg));
         fill: #000;
@@ -100,7 +107,7 @@ body {
     position: absolute;
     left: 0;
     bottom: 0;
-    margin: 14px;
+    margin: 0 14px 10px 14px;
     & a {
         float: left;
         margin: 0 5px 0 0;

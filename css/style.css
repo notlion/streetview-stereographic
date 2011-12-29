@@ -77,21 +77,23 @@ body {
   fill: #444;
   stroke-width: 2px;
   cursor: pointer;
-  -webkit-transition-property: all;
-  -moz-transition-property: all;
-  -ms-transition-property: all;
-  -o-transition-property: all;
-  transition-property: all;
-  -webkit-transition-duration: 0.2s;
-  -moz-transition-duration: 0.2s;
-  -ms-transition-duration: 0.2s;
-  -o-transition-duration: 0.2s;
-  transition-duration: 0.2s;
+  -webkit-transition-property: -webkit-transform;
+  -moz-transition-property: -moz-transform;
+  -ms-transition-property: -ms-transform;
+  -o-transition-property: -o-transform;
+  transition-property: transform;
   -webkit-transition-timing-function: ease-out;
   -moz-transition-timing-function: ease-out;
   -ms-transition-timing-function: ease-out;
   -o-transition-timing-function: ease-out;
-  transition-timing-function: ease-out; }
+  transition-timing-function: ease-out;
+  -webkit-transition-duration: 0.2s;
+  -moz-transition-duration: 0.2s;
+  -ms-transition-duration: 0.2s;
+  -o-transition-duration: 0.2s;
+  transition-duration: 0.2s; }
+  #code-toggle:hover {
+    fill: #0098cc; }
   #code-toggle.open {
     -webkit-transform: rotate(45deg);
     -moz-transform: rotate(45deg);
@@ -136,7 +138,7 @@ body {
   position: absolute;
   left: 0;
   bottom: 0;
-  margin: 14px; }
+  margin: 0 14px 10px 14px; }
   #panoui a {
     float: left;
     margin: 0 5px 0 0;

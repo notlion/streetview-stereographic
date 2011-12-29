@@ -337,7 +337,7 @@ if(!window.requestAnimationFrame){
 <body>
     <div id="left">
         <canvas id="gl-canvas" class="grabbable"></canvas>
-<textarea id="code" class="shut" style="visibility:hidden">
+<textarea id="code" class="shut" style="visibility:hidden" spellcheck="false">
 uniform sampler2D texture;
 uniform float scale, aspect, time;
 uniform mat3 transform;
@@ -368,10 +368,10 @@ void main(){
     gl_FragColor = texture2D(texture, vec2(lon, lat) / rads);
 }
 </textarea>
-        <svg id="code-toggle" title="Toggle Shader Source" class="shut" width="30" height="30" version="1.1">
-            <g transform="translate(15,15)scale(13)">
-                <circle cx="0" cy="0" r="1" vector-effect="non-scaling-stroke"/>
-                <path d="M -1,0 L 1,0 M 0,-1 L 0,1" vector-effect="non-scaling-stroke" transform="scale(0.55)"/>
+        <svg id="code-toggle" title="Toggle Shader Source" class="shut" width="30" height="30" version="1.2" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(15,15)">
+                <circle cx="0" cy="0" r="13"/>
+                <path d="M -7,0 L 7,0 M 0,-7 L 0,7"/>
             </g>
         </svg>
         <div id="panoui">
