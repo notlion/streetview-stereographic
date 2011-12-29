@@ -197,7 +197,7 @@ function init(){
         util.addMouseWheelListener(canvas, function(e){
             pano_zoom_goal = core.math.clamp(pano_zoom - e.delta * 0.0333, 0.5, 10);
         });
-        var pano_zoom = 2;
+        var pano_zoom = 1.8;
         var pano_zoom_goal = pano_zoom;
 
 
