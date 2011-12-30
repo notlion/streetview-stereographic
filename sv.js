@@ -47,7 +47,7 @@ define([
     };
 
     function TileLoader(gl){
-        var max_open_requests = 2;
+        var max_open_requests = 4;
         var max_zoom = 2;
 
         var tiles_by_id = {};
@@ -116,14 +116,18 @@ define([
         };
 
         function onTileLoadComplete(tile){
+            // Notify any 0-Zoom tile load callbacks
             if(tile.coord.zoom === 0 && tile.coord.pano in callbacks_by_id){
                 callbacks_by_id[tile.coord.pano]();
                 delete callbacks_by_id[tile.coord.pano];
             }
-            if(--num_open_requests === 0 && pano_zoom < max_zoom){
+
+            // Move to the next zoom level if possible
+            if(--num_open_requests === 0 && queued_coords.length === 0 && pano_zoom < max_zoom){
                 loader.setZoom(pano_zoom + 1);
                 loader.queueAll();
             }
+
             loader.processQueue();
         }
 
