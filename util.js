@@ -18,6 +18,8 @@ define(function(){
         "DOMMouseScroll"
     ];
 
+    var url_hash_regex = /[#&]([\w\-\.,]+)=([\w\-\.,]+)/g;
+
     // Listen for multiple events and remove all listeners after the first responds
     function addMultiEventListener(element, events, callback, once){
         function onEvent(e){
@@ -68,6 +70,24 @@ define(function(){
             }
             img.src = src;
             return img;
+        },
+
+        parseUrlHash: function(hash){
+            var res, params = {};
+            while((res = url_hash_regex.exec(hash)) != null){
+                params[res[1]] = res[2].indexOf(",") === -1 ? res[2]
+                                                            : res[2].split(",");
+            }
+            return params;
+        },
+
+        stringifyParams: function(params){
+            var hash = [];
+            for(var key in params){
+                hash.push(key + "=" + (params[key] instanceof Array ? params[key].join(",")
+                                                                    : params[key]));
+            }
+            return hash.join("&");
         },
 
         addTransitionEndListener: function(element, callback, once){

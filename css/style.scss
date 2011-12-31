@@ -14,6 +14,10 @@ body {
     scroll: none;
 }
 
+a {
+    text-decoration: none;
+}
+
 #left, #right {
     float: left;
     height: 100%;
@@ -116,19 +120,21 @@ body {
         border: solid 2px #fff;
         background-color: #444;
         color: #fff;
-        text-decoration: none;
         &:hover {
             background-color: #0098cc;
         }
     }
 }
 
-#mapui input, #panoui a {
+#mapui, #mapui input, #panoui a {
     font-family: Helvetica, sans-serif;
     font-size: 14px;
-    font-weight: bold;
     letter-spacing: -0.05em;
     line-height: 1.5em;
+}
+#mapui input, #panoui a {
+    font-size: 14px;
+    font-weight: bold;
 }
 
 .input-border {

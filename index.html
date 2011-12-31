@@ -51,8 +51,11 @@ function init(){
         var streetview = new google.maps.StreetViewService();
         var geocoder = new google.maps.Geocoder();
 
-        google.maps.event.addListener(map, "click", function(event){
-            streetview.getPanoramaByLocation(event.latLng, 50, onPanoData);
+        google.maps.event.addListener(map, "click", function(e){
+            streetview.getPanoramaByLocation(e.latLng, 50, onPanoData);
+        });
+        google.maps.event.addListener(map, "zoom_changed", function(e){
+            updateHash();
         });
 
 
@@ -126,7 +129,7 @@ function init(){
                 geocoder.geocode({ address: location.value }, function(res, status){
                     if(status == google.maps.GeocoderStatus.OK){
                         map.fitBounds(res[0].geometry.viewport);
-                        streetview.getPanoramaByLocation(res[0].geometry.location, 50, onPanoData);
+                        streetview.getPanoramaByLocation(res[0].geometry.location, 100, onPanoData);
                     }
                 });
                 location.blur();
@@ -171,10 +174,7 @@ function init(){
                     }
                 });
                 if(best_link){
-                    streetview.getPanoramaById(best_link.pano, function(data, status){
-                        map.panTo(data.location.latLng);
-                        onPanoData(data, status);
-                    });
+                    streetview.getPanoramaById(best_link.pano, onPanoData);
                 }
             }
         }, false);
@@ -196,6 +196,7 @@ function init(){
 
         util.addMouseWheelListener(canvas, function(e){
             pano_zoom_goal = core.math.clamp(pano_zoom - e.delta * 0.0333, 0.5, 10);
+            updateHash();
         });
         var pano_zoom = 1.8;
         var pano_zoom_goal = pano_zoom;
@@ -213,6 +214,7 @@ function init(){
             canvas.classList.remove("grabbing");
             canvas.removeEventListener("mousemove", onCanvasMouseDrag);
             document.removeEventListener("mouseup", onCanvasMouseUp);
+            updateHash();
         }
         canvas.addEventListener("mousedown", function(e){
             e.preventDefault();
@@ -225,12 +227,12 @@ function init(){
         above.addEventListener("click", function(e){
             e.preventDefault();
             arcball.orientation.reset();
-            console.log("above");
+            updateHash();
         });
         below.addEventListener("click", function(e){
             e.preventDefault();
             arcball.orientation.reset().rotate(Math.PI, 1,0,0);
-            console.log("below");
+            updateHash();
         });
 
 
@@ -252,24 +254,24 @@ function init(){
 
         function onPanoData(data, status){
             if(status == google.maps.StreetViewStatus.OK){
-                pano_marker.setPosition(data.location.latLng);
+                var ll = data.location.latLng;
+                pano_marker.setPosition(ll);
+                if(!map.getBounds().contains(ll))
+                    map.panTo(ll);
                 loader.setPano(data, function(){
                     pano_heading = util.degreeToRadian(data.tiles.centerHeading);
                     location.value = data.location.description.trim();
                 });
+                updateHash();
             }
         }
         var pano_heading = 0;
 
         function refresh(){
-            // if(anim_handle)
-            //     util.cancelAnimationFrame(anim_handle);
-            anim_handle = window.requestAnimationFrame(onDraw);
+            window.requestAnimationFrame(onDraw);
         }
-        var anim_handle = null;
 
         function onDraw(){
-            anim_handle = null;
             refresh();
 
             var time = (Date.now() - start_time) / 1000;
@@ -309,11 +311,53 @@ function init(){
             arcball.radius = arcball.center.length();
         }
 
+        function updateHash(){
+            var params = {
+                "o": arcball.orientation.toArray().map(function(x){ return x.toFixed(3); }),
+                "z": pano_zoom_goal.toFixed(3),
+                "mz": map.getZoom().toFixed()
+            };
+            var data = loader.getPano();
+            if(data && data.location)
+                params["ll"] = [ data.location.latLng.lat(), data.location.latLng.lng() ];
+            document.location.hash = util.stringifyParams(params);
+        }
+        function loadHash(){
+            var params = util.parseUrlHash(document.location.hash);
+            if(params.o && params.o.length === 4){
+                arcball.orientation.set.apply(arcball.orientation, params.o.map(parseFloat));
+                pano_orientation.setQuat(arcball.orientation);
+            }
+            if(params.z){
+                pano_zoom = pano_zoom_goal = parseFloat(params.z);
+            }
+            if(params.mz){
+                map.setZoom(parseInt(params.mz));
+            }
+            if(params.ll && params.ll.length === 2){
+                streetview.getPanoramaByLocation(new google.maps.LatLng(
+                    parseFloat(params.ll[0]),
+                    parseFloat(params.ll[1])
+                ), 50, onPanoData);
+                load_hash_pano_fetched = true;
+            }
+        }
+        var load_hash_pano_fetched = false;
+
+
+        // Load Parameters from Hash
+
+        if(document.location.hash)
+            loadHash();
+        if(!load_hash_pano_fetched)
+            streetview.getPanoramaByLocation(map.getCenter(), 1000, onPanoData);
+
+
+        // Layout and begin Draw Loop
+
         window.addEventListener("resize", onResize, false);
         onResize();
         refresh();
-
-        streetview.getPanoramaByLocation(map.getCenter(), 1000, onPanoData);
 
     });
 }
