@@ -4,7 +4,7 @@
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
 <link href="css/style.css" media="all" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="lib/embr/src/lib/require.js"></script>
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=geometry&sensor=false"></script>
 <script type="text/javascript">
 
 "use strict";
@@ -24,6 +24,11 @@ function init(){
     ],
     function(core, material, Arcball, util, sv){
 
+        var starter_locations = [
+            "35.66007,139.69978", "Market and 6th, SF"
+        ];
+
+
         // Get DOM Elements
 
         var left = document.getElementById("left");
@@ -36,27 +41,35 @@ function init(){
         var location = document.getElementById("location");
         var above = document.getElementById("above");
         var below = document.getElementById("below");
+        var fullwindow_toggle = document.getElementById("fullwindow");
 
 
         // Setup GoogMaps
 
-        var map = new google.maps.Map(document.getElementById("map"), {
-            center: new google.maps.LatLng(35.68105404078226, -220.23288249969482),
+        var gm = google.maps;
+        var map = new gm.Map(document.getElementById("map"), {
+            center: new gm.LatLng(0, 0),
             zoom: 15,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            mapTypeId: gm.MapTypeId.ROADMAP,
             streetViewControl: false,
             keyboardShortcuts: false
         });
-        var pano_marker = new google.maps.Marker({ map: map });
-        var streetview = new google.maps.StreetViewService();
-        var geocoder = new google.maps.Geocoder();
+        var pano_marker = new gm.Marker({ map: map });
+        var streetview = new gm.StreetViewService();
+        var geocoder = new gm.Geocoder();
 
-        google.maps.event.addListener(map, "click", function(e){
+        gm.event.addListener(map, "click", function(e){
             streetview.getPanoramaByLocation(e.latLng, 50, onPanoData);
         });
-        google.maps.event.addListener(map, "zoom_changed", function(e){
+        gm.event.addListener(map, "zoom_changed", function(e){
             updateHash();
         });
+
+        function centerPanoMarker(){
+            var data = loader.getPano();
+            if(data && !map.getBounds().contains(data.location.latLng))
+                map.panTo(data.location.latLng);
+        }
 
 
         // Setup Dynamic Code Compilation
@@ -71,12 +84,15 @@ function init(){
                 "gl_Position = projection * vec4(position, 1.);",
             "}"
         ].join("\n");
+        var pano_shader_src_frag_initial = code.value.trim();
 
         function tryShaderCompile(){
             try{
                 pano_shader.compile(pano_shader_src_vert, code.value);
                 pano_shader.link();
                 code.classList.remove("error");
+                if(code.value.trim() != pano_shader_src_frag_initial)
+                    updateHash();
                 console.log("Compile Successful!");
             }
             catch(err){
@@ -126,11 +142,8 @@ function init(){
             e.stopPropagation();
             if(e.keyCode == 13){ // return
                 e.preventDefault();
-                geocoder.geocode({ address: location.value }, function(res, status){
-                    if(status == google.maps.GeocoderStatus.OK){
-                        map.fitBounds(res[0].geometry.viewport);
-                        streetview.getPanoramaByLocation(res[0].geometry.location, 100, onPanoData);
-                    }
+                searchAddress(location.value, function(loc){
+                    streetview.getPanoramaByLocation(loc, 100, onPanoData);
                 });
                 location.blur();
             }
@@ -236,6 +249,16 @@ function init(){
         });
 
 
+        // Fullwindow
+
+        var fullwindow = false;
+        fullwindow_toggle.addEventListener("click", function(e){
+            e.preventDefault();
+            fullwindow_toggle.textContent = (fullwindow = !fullwindow) ? "halfwindow" : "fullwindow";
+            resize();
+        });
+
+
         // Setup GL
 
         // var gl = core.Util.glWrapContextWithErrorChecks(util.getGLContext(canvas));
@@ -253,25 +276,33 @@ function init(){
 
 
         function onPanoData(data, status){
-            if(status == google.maps.StreetViewStatus.OK){
+            if(status == gm.StreetViewStatus.OK){
                 var ll = data.location.latLng;
                 pano_marker.setPosition(ll);
-                if(!map.getBounds().contains(ll))
-                    map.panTo(ll);
                 loader.setPano(data, function(){
                     pano_heading = util.degreeToRadian(data.tiles.centerHeading);
                     location.value = data.location.description.trim();
                 });
+                centerPanoMarker();
                 updateHash();
             }
         }
         var pano_heading = 0;
 
-        function refresh(){
-            window.requestAnimationFrame(onDraw);
+        function searchAddress(address, callback){
+            geocoder.geocode({ address: address }, function(res, status){
+                if(status == gm.GeocoderStatus.OK){
+                    map.fitBounds(res[0].geometry.viewport);
+                    callback(res[0].geometry.location);
+                }
+            });
         }
 
-        function onDraw(){
+        function refresh(){
+            window.requestAnimationFrame(draw);
+        }
+
+        function draw(){
             refresh();
 
             var time = (Date.now() - start_time) / 1000;
@@ -293,13 +324,8 @@ function init(){
         }
         var start_time = Date.now();
 
-        function onResize(){
-            var padding = 10, margin = 32;
-            code.style.left = margin + "px";
-            code.style.top = margin + "px";
-            code.style.padding = padding + "px";
-            code.style.width = (left.offsetWidth - (padding + margin) * 2) + "px";
-            code.style.height = (left.offsetHeight - (padding + margin) * 2 - panoui.clientHeight) + "px";
+        function resize(){
+            left.style.width = fullwindow ? "100%" : "50%";
 
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
@@ -318,8 +344,12 @@ function init(){
                 "mz": map.getZoom().toFixed()
             };
             var data = loader.getPano();
-            if(data && data.location)
-                params["ll"] = [ data.location.latLng.lat(), data.location.latLng.lng() ];
+            if(data && data.location){
+                params["ll"] = [
+                    data.location.latLng.lat().toFixed(5),
+                    data.location.latLng.lng().toFixed(5)
+                ];
+            }
             document.location.hash = util.stringifyParams(params);
         }
         function loadHash(){
@@ -335,7 +365,7 @@ function init(){
                 map.setZoom(parseInt(params.mz));
             }
             if(params.ll && params.ll.length === 2){
-                streetview.getPanoramaByLocation(new google.maps.LatLng(
+                streetview.getPanoramaByLocation(new gm.LatLng(
                     parseFloat(params.ll[0]),
                     parseFloat(params.ll[1])
                 ), 50, onPanoData);
@@ -349,14 +379,18 @@ function init(){
 
         if(document.location.hash)
             loadHash();
-        if(!load_hash_pano_fetched)
-            streetview.getPanoramaByLocation(map.getCenter(), 1000, onPanoData);
+        if(!load_hash_pano_fetched){
+            searchAddress(starter_locations[core.math.randInt(starter_locations.length)], function(loc){
+                loc = gm.geometry.spherical.computeOffset(loc, core.math.rand(100), core.math.rand(360));
+                streetview.getPanoramaByLocation(loc, 100, onPanoData);
+            });
+        }
 
 
         // Layout and begin Draw Loop
 
-        window.addEventListener("resize", onResize, false);
-        onResize();
+        window.addEventListener("resize", resize, false);
+        resize();
         refresh();
 
     });
@@ -421,6 +455,7 @@ void main(){
         <div id="panoui">
             <a id="above" href="#">above</a>
             <a id="below" href="#">below</a>
+            <a id="fullwindow" class="r" href="#">fullwindow</a>
         </div>
     </div>
     <div id="right">

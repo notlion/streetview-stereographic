@@ -16,6 +16,7 @@ a {
   height: 100%; }
 
 #left {
+  position: relative;
   width: 50%; }
 
 #right {
@@ -23,6 +24,11 @@ a {
 
 #code {
   position: absolute;
+  left: 30px;
+  right: 30px;
+  top: 30px;
+  bottom: 48px;
+  padding: 10px;
   border: none;
   border-radius: 5px;
   color: white;
@@ -140,6 +146,7 @@ a {
 #panoui {
   position: absolute;
   left: 0;
+  right: 0;
   bottom: 0;
   margin: 0 14px 10px 14px; }
   #panoui a {
@@ -152,6 +159,9 @@ a {
     color: #fff; }
     #panoui a:hover {
       background-color: #0098cc; }
+    #panoui a.r {
+      float: right;
+      margin: 0 0 0 5px; }
 
 #mapui, #mapui input, #panoui a {
   font-family: Helvetica, sans-serif;
