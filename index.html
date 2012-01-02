@@ -4,7 +4,7 @@
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
 <link href="css/style.css" media="all" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="lib/embr/src/lib/require.js"></script>
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=geometry&sensor=false"></script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript">
 
 "use strict";
@@ -23,11 +23,6 @@ function init(){
         "sv"
     ],
     function(core, material, Arcball, util, sv){
-
-        var starter_locations = [
-            "35.66007,139.69978", "Market and 6th, SF"
-        ];
-
 
         // Get DOM Elements
 
@@ -70,6 +65,14 @@ function init(){
             if(data && !map.getBounds().contains(data.location.latLng))
                 map.panTo(data.location.latLng);
         }
+
+        var start_locations = [
+            new gm.LatLng(35.66007, 139.69978), // Shibuya
+            new gm.LatLng(-23.61246,-46.59318), // Heliopolis
+            new gm.LatLng(22.32898,114.18759),  // Kowloon
+            new gm.LatLng(22.27844,114.16438),  // Hong Kong
+            new gm.LatLng(33.93011,-118.28101)  // LA 110
+        ];
 
 
         // Setup Dynamic Code Compilation
@@ -365,11 +368,12 @@ function init(){
                 map.setZoom(parseInt(params.mz));
             }
             if(params.ll && params.ll.length === 2){
-                streetview.getPanoramaByLocation(new gm.LatLng(
-                    parseFloat(params.ll[0]),
-                    parseFloat(params.ll[1])
-                ), 50, onPanoData);
-                load_hash_pano_fetched = true;
+                var loc = new gm.LatLng(parseFloat(params.ll[0]), parseFloat(params.ll[1]));
+                if(!isNaN(loc.lat()) && !isNaN(loc.lat())){
+                    map.panTo(loc);
+                    streetview.getPanoramaByLocation(loc, 50, onPanoData);
+                    load_hash_pano_fetched = true;
+                }
             }
         }
         var load_hash_pano_fetched = false;
@@ -380,10 +384,8 @@ function init(){
         if(document.location.hash)
             loadHash();
         if(!load_hash_pano_fetched){
-            searchAddress(starter_locations[core.math.randInt(starter_locations.length)], function(loc){
-                loc = gm.geometry.spherical.computeOffset(loc, core.math.rand(100), core.math.rand(360));
-                streetview.getPanoramaByLocation(loc, 100, onPanoData);
-            });
+            var start_loc = start_locations[core.math.randInt(start_locations.length)];
+            streetview.getPanoramaByLocation(start_loc, 50, onPanoData);
         }
 
 
