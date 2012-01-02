@@ -118,7 +118,6 @@ define([
         };
 
         function onTileLoadComplete(tile){
-            console.log(tile.coord.zoom);
             // Notify any 0-Zoom tile load callbacks
             if(tile.coord.zoom === 0 && tile.coord.pano in callbacks_by_id){
                 callbacks_by_id[tile.coord.pano]();
