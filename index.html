@@ -44,21 +44,50 @@ function init(){
         var gm = google.maps;
         var map = new gm.Map(document.getElementById("map"), {
             center: new gm.LatLng(0, 0),
-            zoom: 15,
+            zoom: 17,
             mapTypeId: gm.MapTypeId.ROADMAP,
             streetViewControl: false,
             keyboardShortcuts: false
         });
-        var pano_marker = new gm.Marker({ map: map });
+        var pano_marker = new gm.Marker({
+            map: map,
+            icon: new gm.MarkerImage("img/pano_marker.png", new gm.Size(14, 14), new gm.Point(0, 0), new gm.Point(7, 7))
+        });
+        var pano_arrow = new gm.Polyline({
+            map: map,
+            clickable: false,
+            strokeColor: "#444",
+            strokeWeight: 4
+        });
+        var pos_marker = new gm.Marker({
+            map: map,
+            draggable: true,
+            raiseOnDrag: false
+        });
         var streetview = new gm.StreetViewService();
         var geocoder = new gm.Geocoder();
 
         gm.event.addListener(map, "click", function(e){
-            streetview.getPanoramaByLocation(e.latLng, 50, onPanoData);
+            pos_marker.setPosition(e.latLng);
         });
+        gm.event.addListener(pos_marker, "position_changed", function(){
+            streetview.getPanoramaByLocation(pos_marker.getPosition(), 50, onPanoData);
+            updatePanoArrow();
+        });
+        gm.event.addListener(pano_marker, "position_changed", updatePanoArrow);
         gm.event.addListener(map, "zoom_changed", function(e){
             updateHash();
         });
+
+        function updatePanoArrow(){
+            var p1 = pano_marker.getPosition();
+            var p2 = pos_marker.getPosition();
+            if(p1 && p2){
+                pano_arrow.setPath(new gm.MVCArray(
+                    (map.getBounds().contains(p1) && map.getBounds().contains(p2)) ? [ p1, p2 ] : []
+                ));
+            }
+        }
 
         function centerPanoMarker(){
             var data = loader.getPano();
@@ -73,7 +102,8 @@ function init(){
             new gm.LatLng(22.27844,114.16438),  // Hong Kong
             new gm.LatLng(33.93011,-118.28101), // LA 110
             new gm.LatLng(37.79071,-122.40561), // SF Chinatown
-            new gm.LatLng(40.70911,-74.01057)   // NYC Zuccotti
+            new gm.LatLng(40.70911,-74.01057),  // NYC Zuccotti
+            new gm.LatLng(35.01639,135.68119)   // Kyoto Arashiyama
         ];
 
 
@@ -148,7 +178,7 @@ function init(){
             if(e.keyCode == 13){ // return
                 e.preventDefault();
                 searchAddress(location.value, function(loc){
-                    streetview.getPanoramaByLocation(loc, 100, onPanoData);
+                    pos_marker.setPosition(loc);
                 });
                 location.blur();
             }
@@ -192,7 +222,12 @@ function init(){
                     }
                 });
                 if(best_link){
-                    streetview.getPanoramaById(best_link.pano, onPanoData);
+                    streetview.getPanoramaById(best_link.pano, function(data, status){
+                        if(status == gm.StreetViewStatus.OK){
+                            pos_marker.setPosition(data.location.latLng);
+                            onPanoData(data, status);
+                        }
+                    });
                 }
             }
         }, false);
@@ -373,7 +408,7 @@ function init(){
                 var loc = new gm.LatLng(parseFloat(params.ll[0]), parseFloat(params.ll[1]));
                 if(!isNaN(loc.lat()) && !isNaN(loc.lat())){
                     map.panTo(loc);
-                    streetview.getPanoramaByLocation(loc, 50, onPanoData);
+                    pos_marker.setPosition(loc);
                     load_hash_pano_fetched = true;
                 }
             }
@@ -387,7 +422,7 @@ function init(){
             loadHash();
         if(!load_hash_pano_fetched){
             var start_loc = start_locations[core.math.randInt(start_locations.length)];
-            streetview.getPanoramaByLocation(start_loc, 50, onPanoData);
+            pos_marker.setPosition(start_loc);
         }
 
 

@@ -151,6 +151,9 @@ define([
         };
 
         this.setPano = function(data, callback){
+            if(pano_data && data.location.pano == pano_data.location.pano)
+                return;
+
             pano_data = data;
 
             if(callback)
