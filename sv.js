@@ -38,7 +38,7 @@ define([
             return [ this.pano, this.zoom, this.x, this.y ].join(",");
         },
         getUrl: function(){
-            return "http://cbk" + Math.floor(Math.random() * 4) + ".google.com/cbk?output=tile" +
+            return "http://cbk" + core.math.randInt(4) + ".google.com/cbk?output=tile" +
                    "&panoid=" + this.pano +
                    "&zoom=" + this.zoom.toFixed() +
                    "&x=" + this.x.toFixed() +
