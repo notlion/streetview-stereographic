@@ -71,6 +71,7 @@ function init(){
         gm.event.addListener(map, "click", function(e){
             pos_marker.setPosition(e.latLng);
         });
+        gm.event.addListener(map, "maptypeid_changed", updateHash);
         gm.event.addListener(pos_marker, "position_changed", function(){
             streetview.getPanoramaByLocation(pos_marker.getPosition(), 50, onPanoData);
             updatePanoArrow();
@@ -97,14 +98,16 @@ function init(){
         }
 
         var start_locations = [
-            new gm.LatLng(35.66007, 139.69978), // Shibuya
-            new gm.LatLng(-23.61071,-46.59209), // Heliopolis
-            new gm.LatLng(22.33605,114.18748),  // Kowloon
-            new gm.LatLng(22.27844,114.16438),  // Hong Kong
-            new gm.LatLng(33.93011,-118.28101), // LA 110
-            new gm.LatLng(37.79071,-122.40561), // SF Chinatown
-            new gm.LatLng(40.70911,-74.01057),  // NYC Zuccotti
-            new gm.LatLng(35.01639,135.68119)   // Kyoto Arashiyama
+            "o=0,0,0,1&ll=54.21050,-2.36962&z=1.656&mt=hybrid", // Ribblehead Viaduct
+            "o=0,0,0,1&ll=35.66007,139.69978",  // Shibuya
+            "o=0,0,0,1&ll=-23.61071,-46.59209", // Heliopolis
+            "o=0,0,0,1&ll=22.33605,114.18748",  // Kowloon
+            "o=0,0,0,1&ll=22.27844,114.16438",  // Hong Kong
+            "o=0,0,0,1&ll=33.93011,-118.28101", // LA 110
+            "o=0,0,0,1&ll=37.79071,-122.40561", // SF Chinatown
+            "o=0,0,0,1&ll=40.70911,-74.01057",  // NYC Zuccotti
+            "o=0,0,0,1&ll=35.01639,135.68119",  // Kyoto Arashiyama
+            "o=0,0,0,1&ll=25.03293,121.56480&z=1.553"   // Taipei 101
         ];
 
 
@@ -384,6 +387,9 @@ function init(){
                 "z": pano_zoom_goal.toFixed(3),
                 "mz": map.getZoom().toFixed()
             };
+            if(map.getMapTypeId() != gm.MapTypeId.ROADMAP){
+                params["mt"] = map.getMapTypeId();
+            }
             var data = loader.getPano();
             if(data && data.location){
                 params["ll"] = [
@@ -405,6 +411,9 @@ function init(){
             if(params.mz){
                 map.setZoom(parseInt(params.mz));
             }
+            if(params.mt){
+                map.setMapTypeId(params.mt);
+            }
             if(params.ll && params.ll.length === 2){
                 var loc = new gm.LatLng(parseFloat(params.ll[0]), parseFloat(params.ll[1]));
                 if(!isNaN(loc.lat()) && !isNaN(loc.lat())){
@@ -422,8 +431,8 @@ function init(){
         if(document.location.hash)
             loadHash();
         if(!load_hash_pano_fetched){
-            var start_loc = start_locations[core.math.randInt(start_locations.length)];
-            pos_marker.setPosition(start_loc);
+            document.location.hash = start_locations[core.math.randInt(start_locations.length)];
+            loadHash();
         }
 
 
