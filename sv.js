@@ -60,6 +60,8 @@ define([
         var pano_zoom = -1;
         var pano_dims;
 
+        var process_queue_timeout;
+
         var framebuffer = this.framebuffer = new core.Fbo(gl, 2048, 2048, [{
             filter_min: gl.LINEAR,
             filter_mag: gl.LINEAR,
@@ -116,6 +118,7 @@ define([
         };
 
         function onTileLoadComplete(tile){
+            console.log(tile.coord.zoom);
             // Notify any 0-Zoom tile load callbacks
             if(tile.coord.zoom === 0 && tile.coord.pano in callbacks_by_id){
                 callbacks_by_id[tile.coord.pano]();
@@ -125,13 +128,22 @@ define([
             // Move to the next zoom level if possible
             if(--num_open_requests === 0 && queued_coords.length === 0 && pano_zoom < max_zoom){
                 loader.setZoom(pano_zoom + 1);
-                loader.queueAll();
+                loader.resetQueue();
             }
 
-            loader.processQueue();
+            // Wait a second before loading the next pano
+            if(process_queue_timeout)
+                window.clearTimeout(process_queue_timeout);
+
+            var delay = pano_zoom === 1 ? 150 : 0;
+
+            process_queue_timeout = window.setTimeout(function(){
+                process_queue_timeout = 0;
+                loader.processQueue();
+            }, delay);
         }
 
-        this.queueAll = function(){
+        this.resetQueue = function(){
             queued_coords = [];
             var img, coord, coord_id, x, y;
             for(y = pano_dims.tiles.y; --y >= 0;){
@@ -160,7 +172,7 @@ define([
                 callbacks_by_id[data.location.pano] = callback;
 
             this.setZoom(0);
-            this.queueAll();
+            this.resetQueue();
             this.processQueue();
         };
 
