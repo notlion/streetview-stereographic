@@ -98,16 +98,16 @@ function init(){
         }
 
         var start_locations = [
-            "o=0,0,0,1&ll=54.21050,-2.36962&z=1.656&mt=hybrid", // Ribblehead Viaduct
-            "o=0,0,0,1&ll=35.66007,139.69978",  // Shibuya
-            "o=0,0,0,1&ll=-23.61071,-46.59209", // Heliopolis
-            "o=0,0,0,1&ll=22.33605,114.18748",  // Kowloon
-            "o=0,0,0,1&ll=22.27844,114.16438",  // Hong Kong
-            "o=0,0,0,1&ll=33.93011,-118.28101", // LA 110
-            "o=0,0,0,1&ll=37.79071,-122.40561", // SF Chinatown
-            "o=0,0,0,1&ll=40.70911,-74.01057",  // NYC Zuccotti
-            "o=0,0,0,1&ll=35.01639,135.68119",  // Kyoto Arashiyama
-            "o=0,0,0,1&ll=25.03293,121.56480&z=1.553"   // Taipei 101
+            "o=0,0,0,1&p=54.21050,-2.36962&z=1.656&mt=hybrid", // Ribblehead Viaduct
+            "o=0,0,0,1&p=35.66007,139.69978",  // Shibuya
+            "o=0,0,0,1&p=-23.61071,-46.59209", // Heliopolis
+            "o=0,0,0,1&p=22.33605,114.18748",  // Kowloon
+            "o=0,0,0,1&p=22.27844,114.16438",  // Hong Kong
+            "o=0,0,0,1&p=33.93011,-118.28101", // LA 110
+            "o=0,0,0,1&p=37.79071,-122.40561", // SF Chinatown
+            "o=0,0,0,1&p=40.70911,-74.01057",  // NYC Zuccotti
+            "o=0,0,0,1&p=35.01639,135.68119",  // Kyoto Arashiyama
+            "o=0,0,0,1&p=25.03293,121.56480&z=1.553"   // Taipei 101
         ];
 
 
@@ -392,7 +392,7 @@ function init(){
             }
             var data = loader.getPano();
             if(data && data.location){
-                params["ll"] = [
+                params["p"] = [
                     data.location.latLng.lat().toFixed(5),
                     data.location.latLng.lng().toFixed(5)
                 ];
@@ -414,8 +414,8 @@ function init(){
             if(params.mt){
                 map.setMapTypeId(params.mt);
             }
-            if(params.ll && params.ll.length === 2){
-                var loc = new gm.LatLng(parseFloat(params.ll[0]), parseFloat(params.ll[1]));
+            if(params.p && params.p.length === 2){
+                var loc = new gm.LatLng(parseFloat(params.p[0]), parseFloat(params.p[1]));
                 if(!isNaN(loc.lat()) && !isNaN(loc.lat())){
                     map.panTo(loc);
                     pos_marker.setPosition(loc);
