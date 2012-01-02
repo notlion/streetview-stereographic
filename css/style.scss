@@ -101,15 +101,6 @@ a {
     @include user-select(none);
 }
 
-#mapui {
-    padding: 10px 0 10px 0;
-    background-color: #f2f3f0;
-}
-
-#mapui, .input-border {
-    @include box-shadow(inset rgba(0,0,0,0.2) 0px 1px 4px);
-}
-
 #panoui {
     position: absolute;
     left: 0;
@@ -132,6 +123,15 @@ a {
             margin: 0 0 0 5px;
         }
     }
+}
+
+#mapui {
+    padding: 11px 0 11px 0;
+    background-color: #f2f3f0;
+}
+
+#mapui, .input-border {
+    @include box-shadow(inset rgba(0,0,0,0.2) 0px 1px 4px);
 }
 
 #mapui, #mapui input, #panoui a {

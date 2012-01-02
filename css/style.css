@@ -132,17 +132,6 @@ a {
   -webkit-user-select: none;
   -ms-user-select: none; }
 
-#mapui {
-  padding: 10px 0 10px 0;
-  background-color: #f2f3f0; }
-
-#mapui, .input-border {
-  -webkit-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
-  -moz-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
-  -ms-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
-  -o-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
-  box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px; }
-
 #panoui {
   position: absolute;
   left: 0;
@@ -162,6 +151,17 @@ a {
     #panoui a.r {
       float: right;
       margin: 0 0 0 5px; }
+
+#mapui {
+  padding: 11px 0 11px 0;
+  background-color: #f2f3f0; }
+
+#mapui, .input-border {
+  -webkit-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
+  -moz-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
+  -ms-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
+  -o-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px;
+  box-shadow: inset rgba(0, 0, 0, 0.2) 0px 1px 4px; }
 
 #mapui, #mapui input, #panoui a {
   font-family: Helvetica, sans-serif;
