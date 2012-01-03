@@ -51,6 +51,9 @@ function(core, material, Arcball, util, sv){
     var above = document.getElementById("above");
     var below = document.getElementById("below");
     var fullwindow_toggle = document.getElementById("fullwindow");
+    var about = document.getElementById("about");
+    var about_toggle = document.getElementById("about-toggle");
+    var about_backdrop = document.getElementById("about-backdrop");
 
 
     // Setup GoogMaps
@@ -304,6 +307,18 @@ function(core, material, Arcball, util, sv){
     });
 
 
+    // About
+
+    about_backdrop.addEventListener("click", function(e){
+        e.preventDefault();
+        about.style.visibility = about_backdrop.style.visibility = "hidden";
+    }, false);
+    about_toggle.addEventListener("click", function(e){
+        e.preventDefault();
+        about.style.visibility = about_backdrop.style.visibility = "visible";
+    }, false);
+
+
     // Setup GL
 
     // var gl = core.Util.glWrapContextWithErrorChecks(util.getGLContext(canvas));
@@ -377,6 +392,9 @@ function(core, material, Arcball, util, sv){
 
         right.style.width = (window.innerWidth - left.offsetWidth) + "px";
         map.getDiv().style.height = (right.clientHeight - mapui.offsetHeight) + "px";
+
+        about.style.left = (window.innerWidth - about.clientWidth) / 2 + "px";
+        about.style.top = (window.innerHeight - about.clientHeight) / 2 + "px";
 
         arcball.center = new core.Vec2(canvas.width / 2, canvas.height / 2);
         arcball.radius = arcball.center.length();
