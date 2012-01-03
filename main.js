@@ -1,17 +1,28 @@
-require({
+require.config({
     paths: {
-        "embr": "lib/embr/src/",
+        "embr": "lib/embr/src"
     }
-},
-[
+});
+require([
     "embr/core",
     "embr/material",
     "embr/Arcball",
     "util",
-    "sv",
-    "lib/domReady"
+    "sv"
 ],
-function(core, material, Arcball, util, sv, domready){
+function(core, material, Arcball, util, sv){
+
+    if(!window.requestAnimationFrame){
+        window.requestAnimationFrame = (function(){
+            return window.webkitRequestAnimationFrame ||
+                   window.mozRequestAnimationFrame    ||
+                   window.oRequestAnimationFrame      ||
+                   window.msRequestAnimationFrame     ||
+                   function(callback, element){
+                       window.setTimeout(callback, 1000 / 60);
+                   };
+        })();
+    }
 
     var start_locations = [
         "o=0,0,0,1&p=54.21050,-2.36962&z=1.656&mt=hybrid", // Ribblehead Viaduct
