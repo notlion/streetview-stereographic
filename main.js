@@ -319,24 +319,8 @@ function(core, material, Arcball, util, sv){
     }, false);
 
 
-    // Setup GL
-
-    // var gl = core.Util.glWrapContextWithErrorChecks(util.getGLContext(canvas));
-    var gl = util.getGLContext(canvas);
-
-    var pano_shader = new core.Program(gl);
-    var plane = core.Vbo.createPlane(gl, 0, 0, 1, 1);
-
-    var modelview = new core.Mat4();
-    var projection = new core.Mat4().ortho(0, 1, 1, 0, -1, 1);
-
-    var loader = new sv.TileLoader(gl);
-
-    tryShaderCompile();
-
-
     function onPanoData(data, status){
-        if(status == gm.StreetViewStatus.OK){
+        if(status == gm.StreetViewStatus.OK && loader){
             var ll = data.location.latLng;
             pano_marker.setPosition(ll);
             loader.setPano(data, function(){
@@ -349,6 +333,23 @@ function(core, material, Arcball, util, sv){
     }
     var pano_heading = 0;
 
+    function resize(){
+        left.style.width = fullwindow ? "100%" : "50%";
+
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+
+        arcball.center = new core.Vec2(canvas.width / 2, canvas.height / 2);
+        arcball.radius = arcball.center.length();
+
+        map.getDiv().style.height = (right.clientHeight - mapui.offsetHeight) + "px";
+
+        about.style.left = (window.innerWidth - about.clientWidth) / 2 + "px";
+        about.style.top = (window.innerHeight - about.clientHeight) / 2 + "px";
+    }
+    window.addEventListener("resize", resize, false);
+
+
     function searchAddress(address, callback){
         geocoder.geocode({ address: address }, function(res, status){
             if(status == gm.GeocoderStatus.OK){
@@ -356,48 +357,6 @@ function(core, material, Arcball, util, sv){
                 callback(res[0].geometry.location);
             }
         });
-    }
-
-    function refresh(){
-        window.requestAnimationFrame(draw);
-    }
-
-    function draw(){
-        refresh();
-
-        var time = (Date.now() - start_time) / 1000;
-
-        gl.viewport(0, 0, canvas.width, canvas.height);
-
-        loader.framebuffer.bindTexture(0);
-        pano_zoom = core.math.lerp(pano_zoom, pano_zoom_goal, 0.33);
-        pano_orientation.slerp(arcball.orientation, 0.33).normalize();
-        pano_shader.use({
-            projection: projection,
-            aspect: canvas.height / canvas.width,
-            scale: Math.pow(pano_zoom, 3),
-            transform: pano_orientation.toMat4().mul(new core.Mat4().rotate(pano_heading + Math.PI / 2, 0,0,1)),
-            time: time,
-            texture: 0
-        });
-        plane.draw(pano_shader);
-    }
-    var start_time = Date.now();
-
-    function resize(){
-        left.style.width = fullwindow ? "100%" : "50%";
-
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
-
-        right.style.width = (window.innerWidth - left.offsetWidth) + "px";
-        map.getDiv().style.height = (right.clientHeight - mapui.offsetHeight) + "px";
-
-        about.style.left = (window.innerWidth - about.clientWidth) / 2 + "px";
-        about.style.top = (window.innerHeight - about.clientHeight) / 2 + "px";
-
-        arcball.center = new core.Vec2(canvas.width / 2, canvas.height / 2);
-        arcball.radius = arcball.center.length();
     }
 
     function updateHash(){
@@ -409,11 +368,11 @@ function(core, material, Arcball, util, sv){
         if(map.getMapTypeId() != gm.MapTypeId.ROADMAP){
             params["mt"] = map.getMapTypeId();
         }
-        var data = loader.getPano();
-        if(data && data.location){
+        var loc;
+        if(loader && loader.getPano() && (loc = loader.getPano().location)){
             params["p"] = [
-                data.location.latLng.lat().toFixed(5),
-                data.location.latLng.lng().toFixed(5)
+                loc.latLng.lat().toFixed(5),
+                loc.latLng.lng().toFixed(5)
             ];
         }
         document.location.hash = util.stringifyParams(params);
@@ -455,10 +414,53 @@ function(core, material, Arcball, util, sv){
     }
 
 
-    // Layout and begin Draw Loop
+    // Loop
 
-    window.addEventListener("resize", resize, false);
+    function refresh(){
+        window.requestAnimationFrame(draw);
+    }
+
+    function draw(){
+        refresh();
+
+        var time = (Date.now() - start_time) / 1000;
+
+        gl.viewport(0, 0, canvas.width, canvas.height);
+
+        loader.framebuffer.bindTexture(0);
+        pano_zoom = core.math.lerp(pano_zoom, pano_zoom_goal, 0.33);
+        pano_orientation.slerp(arcball.orientation, 0.33).normalize();
+        pano_shader.use({
+            projection: projection,
+            aspect: canvas.height / canvas.width,
+            scale: Math.pow(pano_zoom, 3),
+            transform: pano_orientation.toMat4().mul(new core.Mat4().rotate(pano_heading + Math.PI / 2, 0,0,1)),
+            time: time,
+            texture: 0
+        });
+        plane.draw(pano_shader);
+    }
+    var start_time = Date.now();
+
+
+    // Setup GL
+
+    var modelview = new core.Mat4();
+    var projection = new core.Mat4().ortho(0, 1, 1, 0, -1, 1);
+
+    // var gl = core.Util.glWrapContextWithErrorChecks(util.getGLContext(canvas));
+    var gl = util.getGLContext(canvas);
+    if(gl){
+        var pano_shader = new core.Program(gl);
+        var plane = core.Vbo.createPlane(gl, 0, 0, 1, 1);
+
+        var loader = new sv.TileLoader(gl);
+
+        tryShaderCompile();
+
+        refresh();
+    }
+
     resize();
-    refresh();
 
 });
