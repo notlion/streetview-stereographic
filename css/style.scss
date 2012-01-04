@@ -10,6 +10,7 @@ html {
     height: 100%;
 }
 body {
+    font-family: Helvetica, sans-serif;
     height: 100%; margin: 0; padding: 0; overflow: hidden;
     scroll: none;
 }
@@ -94,16 +95,26 @@ a {
     }
 }
 
-#gl-canvas {
+#gl-canvas, #no-webgl, #map {
     width: 100%;
     height: 100%;
+}
+
+#gl-canvas {
     cursor: hand;
     @include user-select(none);
 }
 
+#no-webgl {
+    & p {
+        background-color: #f40;
+        color: #fff;
+        margin: 50px;
+        padding: 20px;
+    }
+}
+
 #map {
-    width: 100%;
-    height: 100%;
     @include user-select(none);
 }
 

@@ -54,6 +54,7 @@ function(core, material, Arcball, util, sv){
     var about = document.getElementById("about");
     var about_toggle = document.getElementById("about-toggle");
     var about_backdrop = document.getElementById("about-backdrop");
+    var no_webgl = document.getElementById("no-webgl");
 
 
     // Setup GoogMaps
@@ -218,11 +219,10 @@ function(core, material, Arcball, util, sv){
     // Setup Keyboard Driving
 
     document.addEventListener("keydown", function(e){
-        var data = loader.getPano();
-        if(data && e.keyCode >= 37 && e.keyCode <= 40){
+        if(loader && loader.getPano() && e.keyCode >= 37 && e.keyCode <= 40){
             var key_heading = (e.keyCode - 38) * (Math.PI / 2);
             var best_link, best_angle = Number.MAX_VALUE, angle;
-            data.links.forEach(function(link){
+            loader.getPano().links.forEach(function(link){
                 angle = util.angleBetween(key_heading, util.degreeToRadian(link.heading));
                 if(angle < Math.PI / 2 && angle < best_angle){
                     best_link = link;
@@ -464,7 +464,15 @@ function(core, material, Arcball, util, sv){
 
         tryShaderCompile();
 
+        // Start Loop
         refresh();
+
+        // Show Canvas
+        canvas.style.display = "block";
+    }
+    else {
+        // Show No-Webgl Error
+        no_webgl.style.display = "block";
     }
 
     resize();

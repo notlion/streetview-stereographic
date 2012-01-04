@@ -28,7 +28,10 @@ _gaq.push(['_trackPageview']);
 </head>
 <body>
     <div id="left">
-        <canvas id="gl-canvas" class="grabbable"></canvas>
+        <canvas id="gl-canvas" class="grabbable" style="display:none;"></canvas>
+        <div id="no-webgl" style="display:none;">
+            <p>Hrm.. It looks like either your browser doesn't support WebGL, or it's not enabled.</p>
+        </div>
 <textarea id="code" class="shut" style="visibility:hidden" spellcheck="false">
 uniform sampler2D texture;
 uniform float scale, aspect, time;
