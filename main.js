@@ -303,6 +303,14 @@ function(core, material, Arcball, util, sv){
     fullwindow_toggle.addEventListener("click", function(e){
         e.preventDefault();
         fullwindow_toggle.textContent = (fullwindow = !fullwindow) ? "halfwindow" : "fullwindow";
+        if(fullwindow){
+            left.classList.add("full");
+            right.classList.add("full");
+        }
+        else{
+            left.classList.remove("full");
+            right.classList.remove("full");
+        }
         resize();
     });
 
@@ -334,8 +342,6 @@ function(core, material, Arcball, util, sv){
     var pano_heading = 0;
 
     function resize(){
-        left.style.width = fullwindow ? "100%" : "50%";
-
         canvas.width = canvas.clientWidth;
         canvas.height = canvas.clientHeight;
 

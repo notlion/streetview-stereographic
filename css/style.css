@@ -19,10 +19,14 @@ a {
 
 #left {
   width: 50%; }
+  #left.full {
+    width: 100%; }
 
 #right {
   right: 0;
   margin-left: 50%; }
+  #right.full {
+    margin-left: 100%; }
 
 #code {
   position: absolute;

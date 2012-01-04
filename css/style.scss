@@ -24,10 +24,16 @@ a {
 }
 #left {
     width: 50%;
+    &.full {
+        width: 100%;
+    }
 }
 #right {
     right: 0;
     margin-left: 50%;
+    &.full {
+        margin-left: 100%;
+    }
 }
 
 #code {
