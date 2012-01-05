@@ -67,7 +67,7 @@ function(core, material, Arcball, util, sv){
         streetViewControl: false,
         keyboardShortcuts: false
     });
-    map.overlayMapTypes.push(new gm.ImageMapType({
+    var sv_overlay = new gm.ImageMapType({
         getTileUrl: function(coord, zoom){
             return "http://cbk" + core.math.randInt(4) + ".google.com/cbk?output=overlay" +
                    "&zoom=" + zoom +
@@ -76,7 +76,7 @@ function(core, material, Arcball, util, sv){
                    "&cb_client=api";
         },
         tileSize: new gm.Size(256, 256)
-    }));
+    });
     var pano_marker = new gm.Marker({
         map: map,
         icon: new gm.MarkerImage("img/pano_marker.png", new gm.Size(14, 14), new gm.Point(0, 0), new gm.Point(7, 7))
@@ -103,6 +103,12 @@ function(core, material, Arcball, util, sv){
     gm.event.addListener(pos_marker, "position_changed", function(){
         streetview.getPanoramaByLocation(pos_marker.getPosition(), 50, onPanoData);
         updatePanoArrow();
+    });
+    gm.event.addListener(pos_marker, "dragstart", function(e){
+        map.overlayMapTypes.setAt(1, sv_overlay);
+    });
+    gm.event.addListener(pos_marker, "dragend", function(e){
+        map.overlayMapTypes.setAt(1, null);
     });
     gm.event.addListener(pano_marker, "position_changed", updatePanoArrow);
     gm.event.addListener(map, "zoom_changed", function(e){
