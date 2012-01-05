@@ -67,6 +67,16 @@ function(core, material, Arcball, util, sv){
         streetViewControl: false,
         keyboardShortcuts: false
     });
+    map.overlayMapTypes.push(new gm.ImageMapType({
+        getTileUrl: function(coord, zoom){
+            return "http://cbk" + core.math.randInt(4) + ".google.com/cbk?output=overlay" +
+                   "&zoom=" + zoom +
+                   "&x=" + coord.x % (1 << zoom) +
+                   "&y=" + coord.y +
+                   "&cb_client=api";
+        },
+        tileSize: new gm.Size(256, 256)
+    }));
     var pano_marker = new gm.Marker({
         map: map,
         icon: new gm.MarkerImage("img/pano_marker.png", new gm.Size(14, 14), new gm.Point(0, 0), new gm.Point(7, 7))
