@@ -146,14 +146,25 @@ function(core, material, Arcball, util, sv){
     ].join("\n");
     var pano_shader_src_frag_initial = code.value.trim();
 
+    var compressor = LZMA ? new LZMA("lib/lzma/lzma_worker.js") : null;
+    var pano_shader_src_compressed;
+
     function tryShaderCompile(){
         try{
             pano_shader.compile(pano_shader_src_vert, code.value);
             pano_shader.link();
             code.classList.remove("error");
-            if(code.value.trim() != pano_shader_src_frag_initial)
-                updateHash();
+
             console.log("Compile Successful!");
+
+            var src_frag = code.value.trim();
+            if(compressor && src_frag != pano_shader_src_frag_initial){
+                pano_shader_src_compressed = null;
+                compressor.compress(src_frag, 1, function(res){
+                    pano_shader_src_compressed = util.byteArrayToHex(res);
+                    updateHash();
+                });
+            }
         }
         catch(err){
             code.classList.add("error");
@@ -345,8 +356,8 @@ function(core, material, Arcball, util, sv){
 
     function onPanoData(data, status){
         if(status == gm.StreetViewStatus.OK && loader){
-            var ll = data.location.latLng;
-            pano_marker.setPosition(ll);
+            var pos = data.location.latLng;
+            pano_marker.setPosition(pos);
             loader.setPano(data, function(){
                 pano_heading = util.degreeToRadian(data.tiles.centerHeading);
                 location.value = data.location.description.trim();
@@ -397,6 +408,9 @@ function(core, material, Arcball, util, sv){
                 loc.latLng.lng().toFixed(5)
             ];
         }
+        if(pano_shader_src_compressed){
+            params["fs"] = pano_shader_src_compressed;
+        }
         document.location.hash = util.stringifyParams(params);
     }
     function loadHash(){
@@ -421,6 +435,12 @@ function(core, material, Arcball, util, sv){
                 pos_marker.setPosition(loc);
                 load_hash_pano_fetched = true;
             }
+        }
+        if(params.fs && typeof(params.fs) == "string" && compressor){
+            compressor.decompress(util.hexToByteArray(params.fs), function(res){
+                code.value = res;
+                tryShaderCompile();
+            });
         }
     }
     var load_hash_pano_fetched = false;

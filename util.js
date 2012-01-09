@@ -115,6 +115,32 @@ define(function(){
             while(h2 > M_2PI) h2 -= M_2PI;
             var a = Math.abs(h1 - h2);
             return a > M_PI ? M_2PI - a : a;
+        },
+
+        hexToByteArray: function(hex){
+            var tmp, arr = [];
+            for(var i = 0; i < hex.length; i += 2){
+                tmp = hex.substring(i, i + 2);
+                arr.push(parseInt(tmp, 16));
+            }
+            return arr;
+        },
+
+        byteArrayToHex: function(arr){
+            var tmp, hex = "";
+            for(var i = 0, n = arr.length; i < n; ++i){
+                if(arr[i] < 0)
+                    arr[i] += 256;
+
+                tmp = arr[i].toString(16);
+
+                // add leading zero
+                if(tmp.length == 1)
+                    tmp = "0" + tmp;
+
+                hex += tmp;
+            }
+            return hex;
         }
 
     };
