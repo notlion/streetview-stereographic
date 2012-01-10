@@ -28,6 +28,16 @@ _gaq.push(['_trackPageview']);
 </script>
 </head>
 <body>
+    <div id="right">
+        <div id="map"></div>
+        <div id="mapui">
+            <div class="input-border">
+                <input id="location" type="text" value="hello" tabindex="0" spellcheck="false"
+                    onfocus="this.parentNode.classList.add('focus')"
+                    onblur="this.parentNode.classList.remove('focus')"/>
+            </div>
+        </div>
+    </div>
     <div id="left">
         <canvas id="gl-canvas" class="grabbable" style="display:none;"></canvas>
         <div id="no-webgl" style="display:none;">
@@ -73,18 +83,8 @@ void main(){
         <div id="panoui">
             <a id="above" href="#">above</a>
             <a id="below" href="#">below</a>
-            <a id="fullwindow" class="r" href="#">fullwindow</a>
+            <a id="fullwindow" class="r" href="#">&rarr;</a>
             <a id="about-toggle" class="r" href="#">about</a>
-        </div>
-    </div>
-    <div id="right">
-        <div id="map"></div>
-        <div id="mapui">
-            <div class="input-border">
-                <input id="location" type="text" value="hello" tabindex="0" spellcheck="false"
-                    onfocus="this.parentNode.classList.add('focus')"
-                    onblur="this.parentNode.classList.remove('focus')"/>
-            </div>
         </div>
     </div>
     <div id="about-backdrop" style="visibility:hidden;"></div>

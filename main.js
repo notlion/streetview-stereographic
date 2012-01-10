@@ -327,18 +327,21 @@ function(core, material, Arcball, util, sv){
     // Fullwindow
 
     var fullwindow = false;
+    function setFullwindow(fw){
+        if(fw !== fullwindow){
+            fullwindow = fw;
+            fullwindow_toggle.textContent = fullwindow ? "←" : "→";
+            if(fullwindow)
+                left.classList.add("full");
+            else
+                left.classList.remove("full");
+            resize();
+            updateHash();
+        }
+    }
     fullwindow_toggle.addEventListener("click", function(e){
         e.preventDefault();
-        fullwindow_toggle.textContent = (fullwindow = !fullwindow) ? "halfwindow" : "fullwindow";
-        if(fullwindow){
-            left.classList.add("full");
-            right.classList.add("full");
-        }
-        else{
-            left.classList.remove("full");
-            right.classList.remove("full");
-        }
-        resize();
+        setFullwindow(!fullwindow);
     });
 
 
@@ -408,6 +411,9 @@ function(core, material, Arcball, util, sv){
                 loc.latLng.lng().toFixed(5)
             ];
         }
+        if(fullwindow){
+            params["fw"] = 1;
+        }
         if(pano_shader_src_compressed){
             params["fs"] = pano_shader_src_compressed;
         }
@@ -436,6 +442,9 @@ function(core, material, Arcball, util, sv){
                 load_hash_pano_fetched = true;
             }
         }
+        if(params.fw && params.fw == 1){
+            setFullwindow(true);
+        }
         if(params.fs && typeof(params.fs) == "string" && compressor){
             compressor.decompress(util.hexToByteArray(params.fs), function(res){
                 code.value = res;
@@ -444,16 +453,6 @@ function(core, material, Arcball, util, sv){
         }
     }
     var load_hash_pano_fetched = false;
-
-
-    // Load Parameters from Hash
-
-    if(document.location.hash)
-        loadHash();
-    if(!load_hash_pano_fetched){
-        document.location.hash = start_locations[core.math.randInt(start_locations.length)];
-        loadHash();
-    }
 
 
     // Loop
@@ -510,6 +509,17 @@ function(core, material, Arcball, util, sv){
         // Show No-Webgl Error
         no_webgl.style.display = "block";
     }
+
+
+    // Load Parameters from Hash
+
+    if(document.location.hash)
+        loadHash();
+    if(!load_hash_pano_fetched){
+        document.location.hash = start_locations[core.math.randInt(start_locations.length)];
+        loadHash();
+    }
+
 
     resize();
 
