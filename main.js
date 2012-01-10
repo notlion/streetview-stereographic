@@ -34,7 +34,8 @@ function(core, material, Arcball, util, sv){
         "o=0,0,0,1&p=37.79071,-122.40561", // SF Chinatown
         "o=0,0,0,1&p=40.70911,-74.01057", // NYC Zuccotti
         "o=0,0,0,1&p=35.01639,135.68119", // Kyoto Arashiyama
-        "o=0,0,0,1&p=25.03293,121.56480&z=1.553" // Taipei 101
+        "o=0,0,0,1&p=25.03293,121.56480&z=1.553", // Taipei 101
+        "o=0,0,0.8,0.6&z=1.484&p=38.21072,140.96991" // Sendai Reconstruction
     ];
 
 
