@@ -55,12 +55,12 @@ varying vec2 v_texcoord;
 
 void main(){
     vec2 rads = vec2(PI * 2., PI);
-    float x = (v_texcoord.x - .5) * scale;
-    float y = (v_texcoord.y - .5) * scale * aspect;
+
+    vec2 pnt = (v_texcoord - .5) * vec2(scale, scale * aspect);
 
     // Project to Sphere
-    float denom = (1. + x*x + y*y);
-    vec3 sphere_pnt = vec3(2. * x, 2. * y, x*x + y*y - 1.) / denom;
+    float x2y2 = pnt.x * pnt.x + pnt.y * pnt.y;
+    vec3 sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);
     sphere_pnt *= transform;
 
     // Convert to Spherical Coordinates
