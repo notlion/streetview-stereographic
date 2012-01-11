@@ -59,11 +59,8 @@ void main(){
     float y = (v_texcoord.y - .5) * scale * aspect;
 
     // Project to Sphere
-    vec3 sphere_pnt = vec3(
-        (2. * x) / (1. + x*x + y*y),
-        (2. * y) / (1. + x*x + y*y),
-        (x*x + y*y - 1.) / (1. + x*x + y*y)
-    );
+    float denom = (1. + x*x + y*y);
+    vec3 sphere_pnt = vec3(2. * x, 2. * y, x*x + y*y - 1.) / denom;
     sphere_pnt *= transform;
 
     // Convert to Spherical Coordinates
@@ -83,7 +80,7 @@ void main(){
         <div id="panoui">
             <a id="above" href="#">above</a>
             <a id="below" href="#">below</a>
-            <a id="fullwindow" class="r" href="#">&rarr;</a>
+            <a id="fullwindow" class="r" href="#">&gt;</a>
             <a id="about-toggle" class="r" href="#">about</a>
         </div>
     </div>
@@ -92,8 +89,8 @@ void main(){
         <h1>Streetview<br/>Stereographic</h1>
         <p>Shader Toy + Google Map + Panoramic Explorer</p>
         <ul>
-            <li>Walk &nbsp; .-. Keyboard &uarr; &larr; &darr; &rarr;</li>
-            <li>Rotate .-. Click and drag left panel</li>
+            <li>Walk &nbsp; .. Keyboard &uarr; &larr; &darr; &rarr;</li>
+            <li>Rotate .. Click and drag left panel</li>
         </ul>
         <div id="forkme">
             <a href="http://github.com/notlion/streetview-stereographic">

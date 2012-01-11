@@ -331,7 +331,7 @@ function(core, material, Arcball, util, sv){
     function setFullwindow(fw){
         if(fw !== fullwindow){
             fullwindow = fw;
-            fullwindow_toggle.textContent = fullwindow ? "←" : "→";
+            fullwindow_toggle.textContent = fullwindow ? "<" : ">";
             if(fullwindow)
                 left.classList.add("full");
             else
