@@ -228,8 +228,8 @@ function(core, material, Arcball, util, sv){
     // Setup Code Toggle Animation
 
     var code_open = false;
-    code_toggle.addEventListener("click", function(e){
-        code_open = !code_open;
+    function setCodeOpen(open){
+        code_open = open;
         code_toggle.setAttribute("class", code_open ? "open" : "shut");
         if(code_open){
             code.style.visibility = "visible";
@@ -241,6 +241,10 @@ function(core, material, Arcball, util, sv){
             }, true);
             code.classList.add("shut");
         }
+        updateHash();
+    }
+    code_toggle.addEventListener("click", function(e){
+        setCodeOpen(!code_open);
     }, false);
 
 
@@ -415,6 +419,9 @@ function(core, material, Arcball, util, sv){
         if(fullwindow){
             params["fw"] = 1;
         }
+        if(code_open){
+            params["c"] = 1;
+        }
         if(pano_shader_src_compressed){
             params["fs"] = pano_shader_src_compressed;
         }
@@ -445,6 +452,9 @@ function(core, material, Arcball, util, sv){
         }
         if(params.fw && params.fw == 1){
             setFullwindow(true);
+        }
+        if(params.c && params.c == 1){
+            setCodeOpen(true);
         }
         if(params.fs && typeof(params.fs) == "string" && compressor){
             compressor.decompress(util.hexToByteArray(params.fs), function(res){
