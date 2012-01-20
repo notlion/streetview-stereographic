@@ -1,4 +1,4 @@
-require.config({
+    require.config({
     paths: {
         "embr": "lib/embr/src"
     }
@@ -36,7 +36,8 @@ function(core, material, Arcball, util, sv){
         "o=0,0,0,1&p=35.01639,135.68119", // Kyoto Arashiyama
         "o=0,0,0,1&p=25.03293,121.56480&z=1.553", // Taipei 101
         "o=0,0,0.8,0.6&z=1.484&p=38.21072,140.96991", // Sendai Reconstruction
-        "o=0,0,0,1&z=1.561&mz=20&mt=hybrid&p=51.17883,-1.82615" // Stonehenge
+        "o=0,0,0,1&z=1.623&p=19.12395,-155.75757", // Hawaii Ocean View
+        "o=0,0,0,1&z=1.361&p=23.64225,119.51382" // Siyu Township
     ];
 
 
@@ -81,12 +82,12 @@ function(core, material, Arcball, util, sv){
     });
     var pano_marker = new gm.Marker({
         map: map,
-        icon: new gm.MarkerImage("img/pano_marker.png", new gm.Size(14, 14), new gm.Point(0, 0), new gm.Point(7, 7))
+        icon: new gm.MarkerImage("img/pano_marker.png", new gm.Size(12, 12), new gm.Point(0, 0), new gm.Point(6, 6))
     });
     var pano_arrow = new gm.Polyline({
         map: map,
         clickable: false,
-        strokeColor: "#444",
+        strokeColor: "#000",
         strokeWeight: 4,
         geodesic: true
     });
