@@ -82,20 +82,38 @@ function(core, material, Arcball, util, sv){
     });
     var pano_marker = new gm.Marker({
         map: map,
-        icon: new gm.MarkerImage("img/pano_marker.png", new gm.Size(12, 12), new gm.Point(0, 0), new gm.Point(6, 6))
+        icon: new gm.MarkerImage("img/arrow.png", new gm.Size(45, 28), new gm.Point(0, 0), new gm.Point(22, 10))
     });
-    var pano_arrow = new gm.Polyline({
+    pano_marker.setHeading = function(heading){
+        var n = 16;
+        var i = Math.floor(heading / core.math.k2PI * n + 0.5) % n;
+        var icon = this.getIcon();
+        icon.origin.x = icon.size.width * (i % 4);
+        icon.origin.y = icon.size.height * Math.floor(i / 4);
+        this.setIcon(icon);
+    };
+    function updatePanoMarkerHeading(){
+        var axis = new core.Vec3(0,-0.01,-1);
+        var dir = arcball.orientation.toMat4().invert().mulVec3(axis);
+        pano_marker.setHeading(Math.atan2(dir.y, dir.x) + Math.PI * 2.5);
+    }
+    var pano_tether = new gm.Polyline({
         map: map,
         clickable: false,
         strokeColor: "#000",
-        strokeWeight: 4,
+        strokeWeight: 3,
         geodesic: true
     });
     var pos_marker = new gm.Marker({
         map: map,
         draggable: true,
-        raiseOnDrag: false
+        icon: new gm.MarkerImage("img/pegman.png", new gm.Size(30, 32), new gm.Point(0, 0), new gm.Point(15, 31))
     });
+    pos_marker.setIconIndex = function(i){
+        var icon = this.getIcon();
+        icon.origin.x = icon.size.width * i;
+        this.setIcon(icon);
+    };
     var streetview = new gm.StreetViewService();
     var geocoder = new gm.Geocoder();
 
@@ -105,24 +123,36 @@ function(core, material, Arcball, util, sv){
     gm.event.addListener(map, "maptypeid_changed", updateHash);
     gm.event.addListener(pos_marker, "position_changed", function(){
         streetview.getPanoramaByLocation(pos_marker.getPosition(), 50, onPanoData);
-        updatePanoArrow();
+        updatePanoTether();
+        if(pos_marker.dragging){
+            var pos = pos_marker.getPosition();
+            if(pos.lng() >= pos_marker.last_lng)
+                pos_marker.setIconIndex(1);
+            else
+                pos_marker.setIconIndex(2);
+            pos_marker.last_lng = pos.lng();
+        }
     });
     gm.event.addListener(pos_marker, "dragstart", function(e){
         map.overlayMapTypes.setAt(1, sv_overlay);
+        pos_marker.last_lng = pos_marker.getPosition().lng();
+        pos_marker.dragging = true;
     });
     gm.event.addListener(pos_marker, "dragend", function(e){
         map.overlayMapTypes.setAt(1, null);
+        pos_marker.setIconIndex(0);
+        pos_marker.dragging = false;
     });
-    gm.event.addListener(pano_marker, "position_changed", updatePanoArrow);
+    gm.event.addListener(pano_marker, "position_changed", updatePanoTether);
     gm.event.addListener(map, "zoom_changed", function(e){
         updateHash();
     });
 
-    function updatePanoArrow(){
+    function updatePanoTether(){
         var p1 = pano_marker.getPosition();
         var p2 = pos_marker.getPosition();
         if(p1 && p2){
-            pano_arrow.setPath(new gm.MVCArray(
+            pano_tether.setPath(new gm.MVCArray(
                 (map.getBounds().contains(p1) && map.getBounds().contains(p2)) ? [ p1, p2 ] : []
             ));
         }
@@ -304,6 +334,7 @@ function(core, material, Arcball, util, sv){
     var pano_orientation = core.Quat.identity();
     function onCanvasMouseDrag(e){
         arcball.drag(e.clientX, e.clientY);
+        updatePanoMarkerHeading();
     }
     function onCanvasMouseUp(e){
         canvas.classList.remove("grabbing");
@@ -322,11 +353,13 @@ function(core, material, Arcball, util, sv){
     above.addEventListener("click", function(e){
         e.preventDefault();
         arcball.orientation.reset();
+        updatePanoMarkerHeading();
         updateHash();
     });
     below.addEventListener("click", function(e){
         e.preventDefault();
         arcball.orientation.reset().rotate(Math.PI, 1,0,0);
+        updatePanoMarkerHeading();
         updateHash();
     });
 
@@ -434,6 +467,7 @@ function(core, material, Arcball, util, sv){
         if(params.o && params.o.length === 4){
             arcball.orientation.set.apply(arcball.orientation, params.o.map(parseFloat));
             pano_orientation.setQuat(arcball.orientation);
+            updatePanoMarkerHeading();
         }
         if(params.z){
             pano_zoom = pano_zoom_goal = parseFloat(params.z);
