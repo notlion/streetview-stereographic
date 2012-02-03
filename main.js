@@ -97,13 +97,6 @@ function(core, material, Arcball, util, sv){
         var dir = arcball.orientation.toMat4().invert().mulVec3(axis);
         pano_marker.setHeading(Math.atan2(dir.y, dir.x) + Math.PI * 2.5);
     }
-    var pano_tether = new gm.Polyline({
-        map: map,
-        clickable: false,
-        strokeColor: "#000",
-        strokeWeight: 3,
-        geodesic: true
-    });
     var pos_marker = new gm.Marker({
         map: map,
         draggable: true,
@@ -123,7 +116,6 @@ function(core, material, Arcball, util, sv){
     gm.event.addListener(map, "maptypeid_changed", updateHash);
     gm.event.addListener(pos_marker, "position_changed", function(){
         streetview.getPanoramaByLocation(pos_marker.getPosition(), 50, onPanoData);
-        updatePanoTether();
         if(pos_marker.dragging){
             var pos = pos_marker.getPosition();
             if(pos.lng() >= pos_marker.last_lng)
@@ -143,20 +135,9 @@ function(core, material, Arcball, util, sv){
         pos_marker.setIconIndex(0);
         pos_marker.dragging = false;
     });
-    gm.event.addListener(pano_marker, "position_changed", updatePanoTether);
     gm.event.addListener(map, "zoom_changed", function(e){
         updateHash();
     });
-
-    function updatePanoTether(){
-        var p1 = pano_marker.getPosition();
-        var p2 = pos_marker.getPosition();
-        if(p1 && p2){
-            pano_tether.setPath(new gm.MVCArray(
-                (map.getBounds().contains(p1) && map.getBounds().contains(p2)) ? [ p1, p2 ] : []
-            ));
-        }
-    }
 
     function centerPanoMarker(){
         var data = loader.getPano();
