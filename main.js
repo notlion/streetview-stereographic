@@ -418,8 +418,8 @@ function(core, material, Arcball, util, sv){
 
     function updateHash(){
         var params = {
-            "o": arcball.orientation.toArray().map(function(x){ return x.toFixed(3); }),
-            "z": pano_zoom_goal.toFixed(3),
+            "o": arcball.orientation.toArray().map(function(x){ return util.formatNumber(x, 3); }),
+            "z": util.formatNumber(pano_zoom_goal, 3),
             "mz": map.getZoom().toFixed()
         };
         if(map.getMapTypeId() != gm.MapTypeId.ROADMAP){

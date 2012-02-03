@@ -19,6 +19,8 @@ define(function(){
     ];
 
     var url_hash_regex = /[#&]([\w\-\.,]+)=([\w\-\.,]+)/g;
+    var trim_leading_zero_regex = /^\-?0+(?!\.0+$)/;
+    var trim_trailing_zero_regex = /\.?0+$/;
 
     // Listen for multiple events and remove all listeners after the first responds
     function addMultiEventListener(element, events, callback, once){
@@ -141,6 +143,12 @@ define(function(){
                 hex += tmp;
             }
             return hex;
+        },
+
+        formatNumber: function(x, n){
+            return x.toFixed(n)
+                .replace(trim_leading_zero_regex, x < 0 ? "-" : "")
+                .replace(trim_trailing_zero_regex, "");
         }
 
     };
