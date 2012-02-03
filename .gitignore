@@ -5,5 +5,3 @@
 *.sublime-workspace
 
 node_modules/
-
-*-built.js
