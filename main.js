@@ -38,7 +38,9 @@ function(core, material, Arcball, util, sv){
         "o=0,0,0.8,0.6&z=1.484&p=38.21072,140.96991", // Sendai Reconstruction
         "o=0,0,0,1&z=1.623&p=19.12395,-155.75757", // Hawaii Ocean View
         "o=0,0,0,1&z=1.361&p=23.64225,119.51382", // Siyu Township
-        "o=0,0,0,1&z=1.591&p=35.69935,139.77133" // Akihabara
+        "o=0,0,0,1&z=1.591&p=35.69935,139.77133", // Akihabara
+        "o=0,0,0,1&z=1.566&p=35.31670,139.53571", // Nara Daibutsu
+        "o=0,0,0,1&z=1.505&mz=18&p=51.50187,-0.11538" // London Leake St
     ];
 
 
