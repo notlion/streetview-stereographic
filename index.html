@@ -14,7 +14,6 @@ window.addEventListener("load", function(){
 
 </script>
 <script type="text/javascript">
-
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-28077326-1']);
 _gaq.push(['_trackPageview']);
@@ -24,7 +23,6 @@ _gaq.push(['_trackPageview']);
     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
-
 </script>
 </head>
 <body>
@@ -43,7 +41,10 @@ _gaq.push(['_trackPageview']);
         <div id="no-webgl" style="display:none;">
             <p>Hrm.. It looks like either your browser doesn't support WebGL, or it's not enabled.</p>
         </div>
-<textarea id="code" class="shut" style="visibility:hidden" spellcheck="false">
+        <div id="code" class="shut" style="visibility:hidden">
+<textarea id="code-text" spellcheck="false">
+precision mediump float;
+
 uniform sampler2D texture;
 uniform float scale, aspect, time;
 uniform mat3 transform;
@@ -70,6 +71,7 @@ void main(){
     gl_FragColor = texture2D(texture, vec2(lon, lat) / rads);
 }
 </textarea>
+        </div>
         <svg id="code-toggle" title="Toggle Shader Source" class="shut" width="30" height="30" version="1.2" xmlns="http://www.w3.org/2000/svg">
             <g transform="translate(15,15)">
                 <circle cx="0" cy="0" r="13"/>

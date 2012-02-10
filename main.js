@@ -46,21 +46,23 @@ function(core, material, Arcball, util, sv){
 
     // Get DOM Elements
 
-    var left = document.getElementById("left");
-    var right = document.getElementById("right");
-    var canvas = document.getElementById("gl-canvas");
-    var code = document.getElementById("code");
-    var code_toggle = document.getElementById("code-toggle");
-    var mapui = document.getElementById("mapui");
-    var panoui = document.getElementById("panoui");
-    var location = document.getElementById("location");
-    var above = document.getElementById("above");
-    var below = document.getElementById("below");
-    var fullwindow_toggle = document.getElementById("fullwindow");
-    var about = document.getElementById("about");
-    var about_toggle = document.getElementById("about-toggle");
-    var about_backdrop = document.getElementById("about-backdrop");
-    var no_webgl = document.getElementById("no-webgl");
+    var left = document.getElementById("left")
+    ,   right = document.getElementById("right")
+    ,   canvas = document.getElementById("gl-canvas")
+    ,   code = document.getElementById("code")
+    ,   code_text = document.getElementById("code-text")
+    ,   code_toggle = document.getElementById("code-toggle")
+    ,   mapui = document.getElementById("mapui")
+    ,   panoui = document.getElementById("panoui")
+    ,   location = document.getElementById("location")
+    ,   above = document.getElementById("above")
+    ,   below = document.getElementById("below")
+    ,   fullwindow_toggle = document.getElementById("fullwindow")
+    ,   about = document.getElementById("about")
+    ,   about_toggle = document.getElementById("about-toggle")
+    ,   about_backdrop = document.getElementById("about-backdrop")
+    ,   no_webgl = document.getElementById("no-webgl")
+    ;
 
 
     // Setup GoogMaps
@@ -161,20 +163,20 @@ function(core, material, Arcball, util, sv){
             "gl_Position = projection * vec4(position, 1.);",
         "}"
     ].join("\n");
-    var pano_shader_src_frag_initial = code.value.trim();
+    var pano_shader_src_frag_initial = code_text.value.trim();
 
     var compressor = LZMA ? new LZMA("lib/lzma/lzma_worker.js") : null;
     var pano_shader_src_compressed;
 
     function tryShaderCompile(){
         try{
-            pano_shader.compile(pano_shader_src_vert, code.value);
+            pano_shader.compile(pano_shader_src_vert, code_text.value);
             pano_shader.link();
-            code.classList.remove("error");
+            code_text.classList.remove("error");
 
             console.log("Compile Successful!");
 
-            var src_frag = code.value.trim();
+            var src_frag = code_text.value.trim();
             if(compressor && src_frag != pano_shader_src_frag_initial){
                 pano_shader_src_compressed = null;
                 compressor.compress(src_frag, 1, function(res){
@@ -184,35 +186,35 @@ function(core, material, Arcball, util, sv){
             }
         }
         catch(err){
-            code.classList.add("error");
+            code_text.classList.add("error");
             console.error("Error compiling shader: " + err);
         }
     }
 
-    code.addEventListener("keydown", function(e){
+    code_text.addEventListener("keydown", function(e){
         e.stopPropagation();
-        if(event.keyCode == 9){ // tab
+        if(e.keyCode == 9){ // tab
             e.preventDefault();
 
-            var start = code.selectionStart;
-            var end = code.selectionEnd;
+            var start = code_text.selectionStart;
+            var end = code_text.selectionEnd;
 
-            code.value = code.value.substring(0, start) + "    " + code.value.substring(end, code.value.length);
-            code.selectionStart = code.selectionEnd = start + 4;
-            code.focus();
+            code_text.value = code_text.value.substring(0, start) + "    " + code_text.value.substring(end, code_text.value.length);
+            code_text.selectionStart = code_text.selectionEnd = start + 4;
+            code_text.focus();
         }
     }, false);
-    code.addEventListener("keyup", function(e){
+    code_text.addEventListener("keyup", function(e){
         e.stopPropagation();
-        if(event.keyCode == 37 || // left
-           event.keyCode == 38 || // up
-           event.keyCode == 39 || // right
-           event.keyCode == 40)   // down
+        if(e.keyCode == 37 || // left
+           e.keyCode == 38 || // up
+           e.keyCode == 39 || // right
+           e.keyCode == 40)   // down
             return;
 
         tryShaderCompile();
     }, false);
-    code.addEventListener("keypress", function(e){
+    code_text.addEventListener("keypress", function(e){
         e.stopPropagation();
     }, false);
 
@@ -479,7 +481,7 @@ function(core, material, Arcball, util, sv){
         }
         if(params.fs && typeof(params.fs) == "string" && compressor){
             compressor.decompress(util.hexToByteArray(params.fs), function(res){
-                code.value = res;
+                code_text.value = res;
                 tryShaderCompile();
             });
         }
