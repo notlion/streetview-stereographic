@@ -40,7 +40,8 @@ function(core, material, Arcball, util, sv){
         "o=0,0,0,1&z=1.361&p=23.64225,119.51382", // Siyu Township
         "o=0,0,0,1&z=1.591&p=35.69935,139.77133", // Akihabara
         "o=0,0,0,1&z=1.566&p=35.31670,139.53571", // Nara Daibutsu
-        "o=0,0,0,1&z=1.505&mz=18&p=51.50187,-0.11538" // London Leake St
+        "o=0,0,0,1&z=1.505&mz=18&p=51.50187,-0.11538", // London Leake St
+        "o=0,0,0,1&z=1.535&p=36.86184,-5.17948" // Setenil de las Bodegas
     ];
 
 
