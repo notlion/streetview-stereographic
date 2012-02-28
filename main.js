@@ -238,8 +238,8 @@ function(core, material, Arcball, util, sv){
             var start = code_text.selectionStart;
             var end = code_text.selectionEnd;
 
-            code_text.value = code_text.value.substring(0, start) + "    " + code_text.value.substring(end, code_text.value.length);
-            code_text.selectionStart = code_text.selectionEnd = start + 4;
+            code_text.value = code_text.value.substring(0, start) + "  " + code_text.value.substring(end, code_text.value.length);
+            code_text.selectionStart = code_text.selectionEnd = start + 2;
             code_text.focus();
         }
     }, false);

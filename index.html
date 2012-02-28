@@ -54,21 +54,21 @@ varying vec2 v_texcoord;
 #define PI 3.141592653589793
 
 void main(){
-    vec2 rads = vec2(PI * 2., PI);
+  vec2 rads = vec2(PI * 2., PI);
 
-    vec2 pnt = (v_texcoord - .5) * vec2(scale, scale * aspect);
+  vec2 pnt = (v_texcoord - .5) * vec2(scale, scale * aspect);
 
-    // Project to Sphere
-    float x2y2 = pnt.x * pnt.x + pnt.y * pnt.y;
-    vec3 sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);
-    sphere_pnt *= transform;
+  // Project to Sphere
+  float x2y2 = pnt.x * pnt.x + pnt.y * pnt.y;
+  vec3 sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);
+  sphere_pnt *= transform;
 
-    // Convert to Spherical Coordinates
-    float r = length(sphere_pnt);
-    float lon = atan(sphere_pnt.y, sphere_pnt.x);
-    float lat = acos(sphere_pnt.z / r);
+  // Convert to Spherical Coordinates
+  float r = length(sphere_pnt);
+  float lon = atan(sphere_pnt.y, sphere_pnt.x);
+  float lat = acos(sphere_pnt.z / r);
 
-    gl_FragColor = texture2D(texture, vec2(lon, lat) / rads);
+  gl_FragColor = texture2D(texture, vec2(lon, lat) / rads);
 }
 </textarea>
         </div>
