@@ -121,7 +121,7 @@ function(core, material, Arcball, util, sv){
     });
     gm.event.addListener(map, "maptypeid_changed", updateHash);
     gm.event.addListener(pos_marker, "position_changed", function(){
-        streetview.getPanoramaByLocation(pos_marker.getPosition(), 50, onPanoData);
+        requestPanoDataByLocation(pos_marker.getPosition(), 50);
         if(pos_marker.dragging){
             var pos = pos_marker.getPosition();
             if(pos.lng() >= pos_marker.last_lng)
@@ -149,6 +149,44 @@ function(core, material, Arcball, util, sv){
         var data = loader.getPano();
         if(data && !map.getBounds().contains(data.location.latLng))
             map.panTo(data.location.latLng);
+    }
+
+
+    var pano_heading;
+    var pending_pano_req;
+    function requestPanoData(requestFn){
+        if(!pending_pano_req){
+            window.setTimeout(function(){
+                pending_pano_req.call(pending_pano_req);
+            }, 50);
+        }
+        pending_pano_req = requestFn;
+    }
+    function requestPanoDataByLocation(location, radius){
+        requestPanoData(function(){
+            streetview.getPanoramaByLocation(location, radius, onPanoData);
+        });
+    }
+    function requestPanoDataById(id, callbackFn){
+        requestPanoData(function(){
+            streetview.getPanoramaById(id, function(){
+                callbackFn.apply(callbackFn, arguments);
+                onPanoData.apply(onPanoData, arguments);
+            });
+        });
+    }
+    function onPanoData(data, status){
+        if(status == gm.StreetViewStatus.OK && loader){
+            var pos = data.location.latLng;
+            pano_marker.setPosition(pos);
+            loader.setPano(data, function(){
+                pano_heading = util.degreeToRadian(data.tiles.centerHeading);
+                location.value = data.location.description.trim();
+            });
+            centerPanoMarker();
+            updateHash();
+        }
+        pending_pano_req = null;
     }
 
 
@@ -281,7 +319,7 @@ function(core, material, Arcball, util, sv){
                 }
             });
             if(best_link){
-                streetview.getPanoramaById(best_link.pano, function(data, status){
+                requestPanoDataById(best_link.pano, function(data, status){
                     if(status == gm.StreetViewStatus.OK){
                         pos_marker.setPosition(data.location.latLng);
                         onPanoData(data, status);
@@ -385,20 +423,6 @@ function(core, material, Arcball, util, sv){
     }, false);
 
 
-    function onPanoData(data, status){
-        if(status == gm.StreetViewStatus.OK && loader){
-            var pos = data.location.latLng;
-            pano_marker.setPosition(pos);
-            loader.setPano(data, function(){
-                pano_heading = util.degreeToRadian(data.tiles.centerHeading);
-                location.value = data.location.description.trim();
-            });
-            centerPanoMarker();
-            updateHash();
-        }
-    }
-    var pano_heading = 0;
-
     function resize(){
         canvas.width = canvas.clientWidth;
         canvas.height = canvas.clientHeight;
@@ -412,7 +436,6 @@ function(core, material, Arcball, util, sv){
         about.style.top = (window.innerHeight - about.clientHeight) / 2 + "px";
     }
     window.addEventListener("resize", resize, false);
-
 
     function searchAddress(address, callback){
         geocoder.geocode({ address: address }, function(res, status){
