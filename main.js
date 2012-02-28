@@ -28,7 +28,7 @@ function(core, material, Arcball, util, sv){
         "o=0,0,0,1&p=54.21050,-2.36962&z=1.656&mt=hybrid", // Ribblehead Viaduct
         "o=0,0,0,1&p=35.66007,139.69978", // Shibuya
         "o=0,0,0,1&p=-23.61071,-46.59209", // Heliopolis
-        "o=0,0,0,1&p=22.33605,114.18748", // Kowloon
+        "o=0,0,0,1&z=1.453&p=22.28687,114.19123", // Hong Kong Construction
         "o=0,0,0,1&p=22.27844,114.16438", // Hong Kong
         "o=0,0,0,1&p=33.93011,-118.28101", // LA 110
         "o=0,0,0,1&p=37.79071,-122.40561", // SF Chinatown
