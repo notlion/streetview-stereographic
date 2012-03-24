@@ -93,7 +93,7 @@ a {
   left: 12px;
   top: 12px;
   stroke: #fff;
-  fill: #444;
+  fill: rgba(0, 0, 0, 0.75);
   stroke-width: 2px;
   cursor: pointer;
   -webkit-transition-property: -webkit-transform;
@@ -158,9 +158,9 @@ a {
     float: left;
     margin: 0 5px 0 0;
     padding: 1px 10px 1px 10px;
-    border-radius: 99px;
+    border-radius: 10px;
     border: solid 2px #fff;
-    background-color: #444;
+    background-color: rgba(0, 0, 0, 0.75);
     color: #fff; }
     #panoui a:hover {
       background-color: #0098cc; }
@@ -226,7 +226,12 @@ a {
   line-height: 1.5em;
   color: #fff;
   background-color: #f40;
-  border-radius: 2px; }
+  border-radius: 2px;
+  -webkit-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 0px 16px;
+  -moz-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 0px 16px;
+  -ms-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 0px 16px;
+  -o-box-shadow: inset rgba(0, 0, 0, 0.2) 0px 0px 16px;
+  box-shadow: inset rgba(0, 0, 0, 0.2) 0px 0px 16px; }
   #about h1 {
     margin: 0 0 0.25em 0; }
   #about p {

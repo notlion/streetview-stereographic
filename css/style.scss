@@ -75,7 +75,7 @@ a {
 #code-toggle {
     position: absolute;
     left: 12px; top: 12px;
-    stroke: #fff; fill: #444;
+    stroke: #fff; fill: rgba(0, 0, 0, 0.75);
     stroke-width: 2px;
     cursor: pointer;
     -webkit-transition-property: -webkit-transform;
@@ -130,9 +130,9 @@ a {
         float: left;
         margin: 0 5px 0 0;
         padding: 1px 10px 1px 10px;
-        border-radius: 99px;
+        border-radius: 10px;
         border: solid 2px #fff;
-        background-color: #444;
+        background-color: rgba(0, 0, 0, 0.75);
         color: #fff;
         &:hover {
             background-color: #0098cc;
@@ -206,6 +206,7 @@ a {
     color: #fff;
     background-color: #f40;
     border-radius: 2px;
+    @include box-shadow(inset rgba(0,0,0,0.2) 0px 0px 16px);
     & h1 {
         margin: 0 0 0.25em 0;
     }
