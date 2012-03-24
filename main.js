@@ -26,6 +26,7 @@ function(core, material, Arcball, util, sv){
 
     var start_locations = [
         "o=0,0,0,1&p=35.66007,139.69978", // Shibuya
+        "o=0,0,0,1&z=1.865&p=35.65602,139.69716", // Tamagawa Dori, Shibuya
         "o=0,0,0,1&z=1.509&p=-23.61623,-46.59105", // Heliopolis
         "o=0,0,0,1&z=1.453&p=22.28687,114.19123", // Hong Kong Construction
         "o=0,0,0,1&p=22.27844,114.16438", // Hong Kong
@@ -34,7 +35,7 @@ function(core, material, Arcball, util, sv){
         "o=0,0,0,1&p=40.70911,-74.01057", // NYC Zuccotti
         "o=0,0,0,1&p=35.01639,135.68119", // Kyoto Arashiyama
         "o=0,0,0,1&p=25.03293,121.56480&z=1.553", // Taipei 101
-        "o=0,0,0.8,0.6&z=1.484&p=38.21072,140.96991", // Sendai Reconstruction
+        "o=0,0,0,1&z=1.435&p=38.67511,141.44689", // Minamisanriku
         "o=0,0,0,1&z=1.623&p=19.12395,-155.75757", // Hawaii Ocean View
         "o=0,0,0,1&z=1.361&p=23.64225,119.51382", // Siyu Township
         "o=0,0,0,1&z=1.591&p=35.69935,139.77133", // Akihabara
