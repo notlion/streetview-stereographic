@@ -69,14 +69,20 @@ function(core, material, Arcball, util, sv){
     // Setup GoogMaps
 
     var gm = google.maps;
-    var map = new gm.Map(document.getElementById("map"), {
-        center: new gm.LatLng(0, 0),
-        zoom: 17,
-        mapTypeId: gm.MapTypeId.ROADMAP,
-        streetViewControl: false,
-        keyboardShortcuts: false
+
+    var MAPTYPE_8BIT = "8bit";
+    var maptype_8bit = new gm.ImageMapType({
+        name: "8-Bit",
+        getTileUrl: function(coord, zoom){
+            return "http://mt" + core.math.randInt(4) + ".google.com/vt/lyrs=8bit,m@174000000" +
+                   "&z=" + zoom +
+                   "&x=" + coord.x % (1 << zoom) +
+                   "&y=" + coord.y;
+        },
+        tileSize: new gm.Size(256, 256),
+        maxZoom: 17
     });
-    var sv_overlay = new gm.ImageMapType({
+    var maptype_streetview = new gm.ImageMapType({
         getTileUrl: function(coord, zoom){
             return "http://cbk" + core.math.randInt(4) + ".google.com/cbk?output=overlay" +
                    "&zoom=" + zoom +
@@ -86,6 +92,19 @@ function(core, material, Arcball, util, sv){
         },
         tileSize: new gm.Size(256, 256)
     });
+
+    var map = new gm.Map(document.getElementById("map"), {
+        center: new gm.LatLng(0, 0),
+        zoom: 17,
+        mapTypeControlOptions: {
+            mapTypeIds: [ gm.MapTypeId.ROADMAP, gm.MapTypeId.HYBRID, MAPTYPE_8BIT ]
+        },
+        mapTypeId: MAPTYPE_8BIT, //gm.MapTypeId.ROADMAP,
+        streetViewControl: false,
+        keyboardShortcuts: false
+    });
+    map.mapTypes.set(MAPTYPE_8BIT, maptype_8bit);
+
     var pano_marker = new gm.Marker({
         map: map,
         icon: new gm.MarkerImage("img/arrow.png", new gm.Size(45, 28), new gm.Point(0, 0), new gm.Point(22, 10))
@@ -132,7 +151,7 @@ function(core, material, Arcball, util, sv){
         }
     });
     gm.event.addListener(pos_marker, "dragstart", function(e){
-        map.overlayMapTypes.setAt(1, sv_overlay);
+        map.overlayMapTypes.setAt(1, maptype_streetview);
         pos_marker.last_lng = pos_marker.getPosition().lng();
         pos_marker.dragging = true;
     });
