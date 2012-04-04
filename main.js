@@ -99,7 +99,7 @@ function(core, material, Arcball, util, sv){
         mapTypeControlOptions: {
             mapTypeIds: [ gm.MapTypeId.ROADMAP, gm.MapTypeId.HYBRID, MAPTYPE_8BIT ]
         },
-        mapTypeId: MAPTYPE_8BIT, //gm.MapTypeId.ROADMAP,
+        mapTypeId: gm.MapTypeId.ROADMAP,
         streetViewControl: false,
         keyboardShortcuts: false
     });
