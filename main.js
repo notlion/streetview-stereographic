@@ -70,40 +70,75 @@ function(core, material, Arcball, util, sv){
 
     var gm = google.maps;
 
-    var MAPTYPE_8BIT = "8bit";
-    var maptype_8bit = new gm.ImageMapType({
-        name: "8-Bit",
-        getTileUrl: function(coord, zoom){
-            return "http://mt" + core.math.randInt(4) + ".google.com/vt/lyrs=8bit,m@174000000" +
-                   "&z=" + zoom +
-                   "&x=" + coord.x % (1 << zoom) +
-                   "&y=" + coord.y;
+    var gm_subdomains = [ "0", "1", "2", "3" ];
+    var stamen_subdomains = [ "", "a.", "b.", "c.", "d." ];
+    var maptype_providers = {
+        "8bit": {
+            name: "8-Bit",
+            url: "http://mt{S}.google.com/vt/lyrs=8bit,m@174000000&z={Z}&x={X}&y={Y}",
+            subdomains: gm_subdomains,
+            min_zoom: 2,
+            max_zoom: 17
         },
-        tileSize: new gm.Size(256, 256),
-        maxZoom: 17
-    });
-    var maptype_streetview = new gm.ImageMapType({
-        getTileUrl: function(coord, zoom){
-            return "http://cbk" + core.math.randInt(4) + ".google.com/cbk?output=overlay" +
-                   "&zoom=" + zoom +
-                   "&x=" + coord.x % (1 << zoom) +
-                   "&y=" + coord.y +
-                   "&cb_client=api";
+        "watercolor": {
+            name: "Watercolor",
+            url: "http://{S}tile.stamen.com/watercolor/{Z}/{X}/{Y}.jpg",
+            subdomains: stamen_subdomains,
+            min_zoom: 3,
+            max_zoom: 16
         },
-        tileSize: new gm.Size(256, 256)
-    });
+        "toner": {
+            name: "Toner",
+            url: "http://{S}tile.stamen.com/toner/{Z}/{X}/{Y}.png",
+            subdomains: stamen_subdomains,
+            min_zoom: 0,
+            max_zoom: 20
+        },
+        "streetview": {
+            name: "StreetView",
+            url: "http://cbk{S}.google.com/cbk?output=overlay&cb_client=api&zoom={Z}&x={X}&y={Y}",
+            subdomains: gm_subdomains,
+            min_zoom: 2,
+            max_zoom: 17
+        }
+    };
+
+    function makeMapType(name){
+        var provider = maptype_providers[name];
+        return new gm.ImageMapType({
+            "getTileUrl": function(coord, zoom){
+                var i = (zoom + coord.x + coord.y) % provider.subdomains.length;
+                return provider.url.replace("{S}", provider.subdomains[i])
+                                   .replace("{Z}", zoom)
+                                   .replace("{X}", coord.x)
+                                   .replace("{Y}", coord.y);
+            },
+            "name": provider.name,
+            "tileSize": new gm.Size(256, 256),
+            "minZoom": provider.min_zoom,
+            "maxZoom": provider.max_zoom
+        });
+    }
+
+    var maptypes = {};
+    for(var name in maptype_providers){
+        maptypes[name] = makeMapType(name);
+    }
 
     var map = new gm.Map(document.getElementById("map"), {
         center: new gm.LatLng(0, 0),
         zoom: 17,
         mapTypeControlOptions: {
-            mapTypeIds: [ gm.MapTypeId.ROADMAP, gm.MapTypeId.HYBRID, MAPTYPE_8BIT ]
+            mapTypeIds: [ gm.MapTypeId.ROADMAP, gm.MapTypeId.HYBRID, "8bit", "watercolor", "toner" ]
         },
         mapTypeId: gm.MapTypeId.ROADMAP,
         streetViewControl: false,
         keyboardShortcuts: false
     });
-    map.mapTypes.set(MAPTYPE_8BIT, maptype_8bit);
+
+    [ "8bit", "watercolor", "toner" ].forEach(function(name){
+        map.mapTypes.set(name, maptypes[name]);
+    });
 
     var pano_marker = new gm.Marker({
         map: map,
@@ -151,7 +186,7 @@ function(core, material, Arcball, util, sv){
         }
     });
     gm.event.addListener(pos_marker, "dragstart", function(e){
-        map.overlayMapTypes.setAt(1, maptype_streetview);
+        map.overlayMapTypes.setAt(1, maptypes["streetview"]);
         pos_marker.last_lng = pos_marker.getPosition().lng();
         pos_marker.dragging = true;
     });
