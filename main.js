@@ -80,13 +80,6 @@ function(core, material, Arcball, util, sv){
             min_zoom: 2,
             max_zoom: 17
         },
-        "watercolor": {
-            name: "Watercolor",
-            url: "http://{S}tile.stamen.com/watercolor/{Z}/{X}/{Y}.jpg",
-            subdomains: stamen_subdomains,
-            min_zoom: 3,
-            max_zoom: 16
-        },
         "toner": {
             name: "Toner",
             url: "http://{S}tile.stamen.com/toner/{Z}/{X}/{Y}.png",
@@ -129,14 +122,14 @@ function(core, material, Arcball, util, sv){
         center: new gm.LatLng(0, 0),
         zoom: 17,
         mapTypeControlOptions: {
-            mapTypeIds: [ gm.MapTypeId.ROADMAP, gm.MapTypeId.HYBRID, "8bit", "watercolor", "toner" ]
+            mapTypeIds: [ gm.MapTypeId.ROADMAP, gm.MapTypeId.HYBRID, "8bit", "toner" ]
         },
         mapTypeId: gm.MapTypeId.ROADMAP,
         streetViewControl: false,
         keyboardShortcuts: false
     });
 
-    [ "8bit", "watercolor", "toner" ].forEach(function(name){
+    [ "8bit", "toner" ].forEach(function(name){
         map.mapTypes.set(name, maptypes[name]);
     });
 
