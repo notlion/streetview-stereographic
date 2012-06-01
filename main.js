@@ -73,13 +73,6 @@ function(core, material, Arcball, util, sv){
     var gm_subdomains = [ "0", "1", "2", "3" ];
     var stamen_subdomains = [ "", "a.", "b.", "c.", "d." ];
     var maptype_providers = {
-        "8bit": {
-            name: "8-Bit",
-            url: "http://mt{S}.google.com/vt/lyrs=8bit,m@174000000&z={Z}&x={X}&y={Y}",
-            subdomains: gm_subdomains,
-            min_zoom: 2,
-            max_zoom: 17
-        },
         "toner": {
             name: "Toner",
             url: "http://{S}tile.stamen.com/toner/{Z}/{X}/{Y}.png",
@@ -129,7 +122,7 @@ function(core, material, Arcball, util, sv){
         keyboardShortcuts: false
     });
 
-    [ "8bit", "toner" ].forEach(function(name){
+    [ "toner" ].forEach(function(name){
         map.mapTypes.set(name, maptypes[name]);
     });
 
