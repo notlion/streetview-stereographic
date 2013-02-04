@@ -398,23 +398,73 @@ function(core, material, Arcball, util, sv){
     var arcball = new Arcball();
     arcball.inverted = true;
     var pano_orientation = core.Quat.identity();
-    function onCanvasMouseDrag(e){
-        arcball.drag(e.clientX, e.clientY);
+    var pano_dragging = false;
+    var pano_dragging_touch_id = null;
+    function beginDrag(x, y){
+        pano_dragging = true;
+        canvas.classList.add("grabbing");
+        arcball.down(x, y);
+    }
+    function drag(x, y){
+        arcball.drag(x, y);
         updatePanoMarkerHeading();
     }
-    function onCanvasMouseUp(e){
+    function endDrag(){
+        pano_dragging = false;
         canvas.classList.remove("grabbing");
-        canvas.removeEventListener("mousemove", onCanvasMouseDrag);
-        document.removeEventListener("mouseup", onCanvasMouseUp);
         updateHash();
     }
-    canvas.addEventListener("mousedown", function(e){
+    function onCanvasMouseDown(e){
         e.preventDefault();
-        canvas.classList.add("grabbing");
-        arcball.down(e.clientX, e.clientY);
-        canvas.addEventListener("mousemove", onCanvasMouseDrag);
-        document.addEventListener("mouseup", onCanvasMouseUp, true);
-    });
+        if(!pano_dragging){
+            beginDrag(e.clientX, e.clientY);
+            canvas.addEventListener("mousemove", onCanvasMouseDrag);
+            document.addEventListener("mouseup", onCanvasMouseUp, true);
+        }
+    }
+    function onCanvasMouseDrag(e){
+        drag(e.clientX, e.clientY);
+    }
+    function onCanvasMouseUp(e){
+        endDrag();
+        canvas.removeEventListener("mousemove", onCanvasMouseDrag);
+        document.removeEventListener("mouseup", onCanvasMouseUp);
+    }
+    function onCanvasTouchStart(e){
+        e.preventDefault();
+        if(!pano_dragging) {
+            var touch = e.changedTouches[0];
+            beginDrag(touch.clientX, touch.clientY);
+            pano_dragging_touch_id = touch.identifier;
+            canvas.addEventListener("touchmove", onCanvasTouchMove);
+            canvas.addEventListener("touchend", onCanvasTouchEnd);
+            canvas.addEventListener("touchcancel", onCanvasTouchEnd);
+            canvas.addEventListener("touchleave", onCanvasTouchEnd);
+        }
+    }
+    function onCanvasTouchMove(e){
+        for(var touch, i = e.changedTouches.length; --i >= 0;) {
+            touch = e.changedTouches[i];
+            if(touch.identifier === pano_dragging_touch_id) {
+                drag(touch.clientX, touch.clientY);
+                break;
+            }
+        }
+    }
+    function onCanvasTouchEnd(e){
+        for(var touch, i = e.changedTouches.length; --i >= 0;) {
+            touch = e.changedTouches[i];
+            if(touch.identifier === pano_dragging_touch_id) {
+                endDrag();
+                canvas.removeEventListener("touchmove", onCanvasTouchMove);
+                canvas.removeEventListener("touchend", onCanvasTouchEnd);
+                canvas.removeEventListener("touchcancel", onCanvasTouchEnd);
+                canvas.removeEventListener("touchleave", onCanvasTouchEnd);
+            }
+        }
+    }
+    canvas.addEventListener("mousedown", onCanvasMouseDown);
+    canvas.addEventListener("touchstart", onCanvasTouchStart);
 
     above.addEventListener("click", function(e){
         e.preventDefault();
