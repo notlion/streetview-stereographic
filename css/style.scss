@@ -125,7 +125,7 @@ a {
     left: 0;
     right: 0;
     bottom: 0;
-    margin: 0 14px 10px 14px;
+    margin: 0 0 10px 14px;
     & a {
         float: left;
         margin: 0 5px 0 0;
@@ -140,6 +140,11 @@ a {
         &.r {
             float: right;
             margin: 0 0 0 5px;
+            &#fullwindow {
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+                border-right: 0;
+            }
         }
     }
 }
