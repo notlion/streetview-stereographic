@@ -35,7 +35,6 @@ function(core, material, Arcball, util, sv){
         "o=0,0,0,1&p=40.70911,-74.01057", // NYC Zuccotti
         "o=0,0,0,1&p=35.01639,135.68119", // Kyoto Arashiyama
         "o=1,0,0,0&z=1.487&p=25.03294,121.56471", // Taipei 101
-        "o=0,0,0,1&z=1.435&p=38.67511,141.44689", // Minamisanriku
         "o=0,0,0,1&z=1.361&p=23.64225,119.51382", // Siyu Township
         "o=0,0,0,1&z=1.591&p=35.69935,139.77133", // Akihabara
         "o=0,0,0,1&z=1.566&p=35.31670,139.53571", // Nara Daibutsu
@@ -81,7 +80,7 @@ function(core, material, Arcball, util, sv){
         },
         "streetview": {
             name: "StreetView",
-            url: "http://cbk{S}.google.com/cbk?output=overlay&cb_client=api&zoom={Z}&x={X}&y={Y}",
+            url: "http://mts{S}.googleapis.com/vt?lyrs=svv|cb_client:apiv3&style=40,18&x={X}&y={Y}&z={Z}&scale=2",
             subdomains: gm_subdomains,
             min_zoom: 2,
             max_zoom: 17
